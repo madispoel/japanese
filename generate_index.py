@@ -17,9 +17,9 @@ def natural_key(value: str) -> list[int | str]:
 
 
 def page_title(path: Path) -> str:
-    chapter = re.fullmatch(r"chapter[-_ ]?(\d+)(?:_kanji)?", path.stem, re.IGNORECASE)
+    chapter = re.fullmatch(r"chapter[-_ ]?(\d+)(?:_(kanji|words))?", path.stem, re.IGNORECASE)
     if chapter:
-        suffix = " Kanji" if path.stem.casefold().endswith("_kanji") else ""
+        suffix = f" {chapter.group(2).title()}" if chapter.group(2) else ""
         return f"Chapter {chapter.group(1)}{suffix}"
     return path.stem.replace("-", " ").replace("_", " ").title()
 
