@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff1f7">
+  <title>Chapter 23 Kanji · Estonian to Japanese Flashcards</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #3b3044;
+      background: #fff1f7;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --green: #d65b91;
+      --green-dark: #b94178;
+      --muted: #817588;
+      --line: #f0dce8;
+      --panel: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      height: 100%;
+    }
+
+    .sidebar {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      background: #fffafd;
+    }
+
+    .sidebar-header {
+      position: sticky;
+      z-index: 1;
+      top: 0;
+      padding: 22px 18px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fffafd;
+    }
+
+    .sidebar-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .sidebar h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .active-count {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 650;
+    }
+
+    .random-order-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 9px;
+      color: #66596d;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .random-order-control input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .random-order-track {
+      position: relative;
+      width: 36px;
+      height: 21px;
+      border-radius: 999px;
+      background: #c9becb;
+      transition: background 150ms ease;
+    }
+
+    .random-order-track::after {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #fff;
+      content: "";
+      box-shadow: 0 1px 3px #0002;
+      transition: transform 150ms ease;
+    }
+
+    .random-order-control input:checked + .random-order-track { background: #9c79cb; }
+    .random-order-control input:checked + .random-order-track::after { transform: translateX(15px); }
+    .random-order-control input:focus-visible + .random-order-track { outline: 3px solid #eca5c3; outline-offset: 3px; }
+
+    .random-range-control {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .random-range-control label {
+      display: grid;
+      flex: 1;
+      gap: 3px;
+      color: #756d79;
+      font-size: 0.66rem;
+      font-weight: 700;
+    }
+
+    .random-range-control select {
+      width: 100%;
+      min-width: 0;
+      padding: 5px 7px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: #4a3e50;
+      font-size: 0.7rem;
+    }
+
+    .reset-button {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+      color: #52635a;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 650;
+    }
+
+    .reset-button:hover { border-color: #e5a9c5; background: #fff0f6; }
+    .reactivate-scoped-button {
+      width: 100%;
+      min-height: 34px;
+      margin-top: 8px;
+      padding: 7px 10px;
+      border: 0;
+      border-radius: 9px;
+      background: linear-gradient(110deg, #ed78a8, #b888e4);
+      color: white;
+      cursor: pointer;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .reactivate-scoped-button:hover { background: linear-gradient(110deg, #dc6095, #9d6dcf); }
+    .reactivate-scoped-button:disabled {
+      background: #eee8f0;
+      color: #817588;
+      cursor: not-allowed;
+    }
+
+    .reset-button:focus-visible, button:focus-visible, input:focus-visible + .switch-track {
+      outline: 3px solid #eca5c3;
+      outline-offset: 3px;
+    }
+
+    .storage-message {
+      margin: 10px 0 0;
+      color: #a33b66;
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    .card-list {
+      display: flex;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      gap: 5px;
+      overflow-y: auto;
+      margin: 0;
+      padding: 10px;
+      list-style: none;
+    }
+
+    .card-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 76px;
+      align-items: center;
+      gap: 5px;
+      min-height: 66px;
+      padding: 6px 8px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      transition: opacity 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .card-row.is-current {
+      border-color: #e595b8;
+      background: #fff0f6;
+    }
+
+    .card-row.is-inactive { opacity: 0.45; }
+
+    .card-select {
+      display: block;
+      min-width: 0;
+      padding: 2px 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .card-select:hover .card-estonian { color: var(--green-dark); }
+    .card-row.is-inactive .card-select { text-decoration: line-through; }
+    .card-row.is-out-of-scope {
+      border-style: dashed;
+      border-color: #d7cbd8;
+      background: #f7f3f8;
+    }
+
+    .card-row.is-out-of-scope .card-estonian { color: #77707d; }
+
+    .card-row-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 3px;
+    }
+
+    .card-number {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    .card-estonian {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: 0.84rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: #ffe4ef;
+      color: #ad3f70;
+      font-size: 0.64rem;
+      font-weight: 700;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .is-inactive .status-badge {
+      background: #f0eaf0;
+      color: #756d79;
+    }
+
+    .status-badge.is-inactive {
+      background: #f0eaf0;
+      color: #756d79;
+    }
+
+    .scope-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: #e6f4eb;
+      color: #34704d;
+      font-size: 0.6rem;
+      font-weight: 700;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .scope-badge.is-out-of-scope {
+      background: #eee8f0;
+      color: #726778;
+    }
+
+    .toggle-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .toggle-control {
+      display: grid;
+      grid-template-columns: 1fr 29px;
+      align-items: center;
+      gap: 2px;
+      min-height: 24px;
+      color: #756d79;
+      cursor: pointer;
+      font-size: 0.6rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .toggle-label {
+      display: inline-flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      min-height: 40px;
+      cursor: pointer;
+    }
+
+    .toggle-label input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .switch-track {
+      position: relative;
+      width: 36px;
+      height: 21px;
+      border-radius: 999px;
+      background: #c9becb;
+      transition: background 150ms ease;
+    }
+
+    .switch-track::after {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: white;
+      content: "";
+      box-shadow: 0 1px 3px #0002;
+      transition: transform 150ms ease;
+    }
+
+    .toggle-label input:checked + .switch-track { background: #e56c9f; }
+    .toggle-label input:checked + .switch-track::after { transform: translateX(15px); }
+    .toggle-label input:focus-visible + .switch-track { outline: 3px solid #eca5c3; outline-offset: 3px; }
+
+    .scope-toggle input:checked + .switch-track { background: #60a982; }
+    .toggle-stack .toggle-label { min-width: 29px; min-height: 24px; }
+    .toggle-stack .switch-track { width: 27px; height: 16px; }
+    .toggle-stack .switch-track::after { top: 2px; left: 2px; width: 12px; height: 12px; }
+    .toggle-stack .toggle-label input:checked + .switch-track::after { transform: translateX(11px); }
+    .toggle-stack .toggle-label input:focus-visible + .switch-track { outline: 2px solid #eca5c3; outline-offset: 2px; }
+    .toggle-stack .scope-toggle input:focus-visible + .switch-track { outline-color: #83c39d; }
+
+    .main-stage {
+      display: grid;
+      min-width: 0;
+      min-height: 0;
+      place-items: center;
+      overflow-y: auto;
+      padding: 38px;
+      background:
+        radial-gradient(circle at 12% 18%, #f8d8e8 0 2px, transparent 3px),
+        radial-gradient(circle at 88% 76%, #e8defa 0 3px, transparent 4px),
+        radial-gradient(ellipse at 50% 42%, #ffffff 0, #fff8fc 48%, #f9eaf4 100%);
+    }
+
+    .study-area {
+      display: flex;
+      width: min(100%, 780px);
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .flashcard {
+      display: flex;
+      width: 100%;
+      position: relative;
+      min-height: 410px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 38px;
+      border: 2px solid #f0d5e4;
+      border-radius: 30px;
+      background: var(--panel);
+      box-shadow: 0 18px 55px #743b5a15, 0 2px 7px #743b5a08, inset 0 0 0 7px #fff8fc;
+      text-align: center;
+    }
+
+    .flashcard::before,
+    .flashcard::after {
+      position: absolute;
+      z-index: 0;
+      color: #efb4ce;
+      content: "✦";
+      font-size: 1.15rem;
+      pointer-events: none;
+    }
+
+    .flashcard::before { top: 20px; left: 22px; }
+    .flashcard::after { right: 22px; bottom: 18px; color: #c9b8ed; }
+    .flashcard > * { position: relative; z-index: 1; }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 650;
+    }
+
+    .card-meta .status-badge { font-size: 0.72rem; }
+
+    .prompt {
+      margin: 38px 0 0;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 680;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    #front-content { width: 100%; }
+    #front-content .prompt { margin: 18px 0 24px; }
+    .front-illustration { margin: 0 auto; }
+
+    .back-content { width: 100%; }
+    .back-content .prompt {
+      margin: 24px 0 30px;
+      color: #817588;
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      font-weight: 560;
+      letter-spacing: 0;
+    }
+
+    .answer-layout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(12px, 4vw, 36px);
+      width: min(100%, 560px);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .answer-copy { min-width: 0; }
+
+    .kanji {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 750;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .answer-illustration {
+      display: block;
+      width: clamp(112px, 24vw, 190px);
+      flex: 0 0 auto;
+      overflow: hidden;
+      border: 2px solid #fff;
+      border-radius: 28px;
+      background: #fff3f9;
+      box-shadow: 0 10px 24px #9f60801c, 0 0 0 1px #f0d5e4;
+    }
+
+    .answer-illustration svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .answer-illustration text {
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    }
+
+    .reading {
+      margin: 10px 0 0;
+      color: #b7477c;
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    [hidden] { display: none !important; }
+
+    .flip-button {
+      display: block;
+      width: min(250px, 70vw);
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      transition: transform 150ms ease;
+    }
+
+    .flip-button:hover { transform: translateY(-3px) rotate(-1deg); }
+    .flip-button svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+    .actions {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .action-button, .completion-button {
+      min-height: 48px;
+      padding: 12px 18px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 130ms ease, transform 130ms ease;
+    }
+
+    .action-button:hover, .completion-button:hover { transform: translateY(-1px); }
+
+    .keep-button, .completion-button {
+      background: linear-gradient(135deg, #ed78a8, #b888e4);
+      color: white;
+    }
+
+    .keep-button:hover, .completion-button:hover { background: linear-gradient(135deg, #dc6095, #9d6dcf); }
+
+    .deactivate-button {
+      border-color: #ead9e4;
+      background: white;
+      color: #695b70;
+    }
+
+    .deactivate-button:hover { background: #fff2f8; }
+
+    .completion {
+      width: min(100%, 600px);
+      padding: 54px 40px;
+      border: 2px solid #f0d5e4;
+      border-radius: 26px;
+      background: white;
+      box-shadow: 0 18px 55px #743b5a15;
+      text-align: center;
+    }
+
+    .completion-emoji { margin: 0 0 12px; font-size: 3.2rem; }
+    .completion h2 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.3rem); }
+    .completion p { margin: 12px 0 26px; color: var(--muted); line-height: 1.6; }
+
+    @media (max-width: 760px) {
+      .app {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(170px, 34vh) minmax(0, 1fr);
+      }
+
+      .sidebar {
+        grid-row: 1;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .sidebar-header { padding: 12px 15px 10px; }
+      .sidebar h1 { font-size: 0.96rem; }
+      .active-count { margin-top: 6px; font-size: 0.8rem; }
+      .card-list { display: grid; grid-auto-columns: minmax(230px, 75vw); grid-auto-flow: column; gap: 6px; overflow-x: auto; overflow-y: hidden; padding: 8px 12px; }
+      .card-row { min-height: 60px; }
+      .main-stage { grid-row: 2; padding: 20px 14px; }
+      .study-area { gap: 14px; }
+      .flashcard { min-height: 300px; padding: 28px 20px; border-radius: 24px; }
+      .prompt { margin-top: 28px; }
+      .back-content .prompt { margin: 16px 0 22px; }
+      .answer-layout { gap: 12px; }
+      .answer-illustration { width: clamp(100px, 34vw, 145px); }
+      .kanji { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+      .reading { font-size: clamp(1.1rem, 5vw, 1.5rem); }
+      .flip-button { width: min(190px, 54vw); }
+      .actions { gap: 8px; }
+      .action-button { flex: 1 1 190px; padding: 11px 12px; font-size: 0.88rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Flashcard list">
+      <header class="sidebar-header">
+        <div class="sidebar-title-row">
+          <h1>Estonian → Japanese · Chapter 23 Kanji</h1>
+          <button class="reset-button" id="reset-button" type="button">Reset All</button>
+        </div>
+        <p class="active-count" id="active-count" aria-live="polite"></p>
+        <label class="random-order-control">
+          <input id="random-order-toggle" type="checkbox" aria-label="Random order" title="Shuffle in-scope active cards; each new round gets a different order">
+          <span class="random-order-track"></span>
+          <span>Random order</span>
+        </label>
+        <div class="random-range-control" aria-label="Random order card range">
+          <label for="random-start-card">Start card
+            <select id="random-start-card"></select>
+          </label>
+          <label for="random-end-card">End card
+            <select id="random-end-card"></select>
+          </label>
+        </div>
+        <button class="reactivate-scoped-button" id="reactivate-scoped-button" type="button">Reactivate Scoped Cards</button>
+        <p class="storage-message" id="storage-message" role="alert" hidden></p>
+      </header>
+      <ol class="card-list" id="card-list" aria-label="All flashcards"></ol>
+    </aside>
+
+    <main class="main-stage">
+      <section class="study-area" id="study-area" aria-live="polite">
+        <article class="flashcard" id="flashcard">
+          <div class="card-meta">
+            <span id="card-position"></span>
+            <span class="status-badge" id="main-status"></span>
+          </div>
+          <div id="front-content">
+            <p class="prompt" id="front-prompt"></p>
+            <div class="answer-illustration front-illustration" id="front-illustration"></div>
+          </div>
+          <div class="back-content" id="back-content" hidden>
+            <p class="prompt" id="back-prompt"></p>
+            <div class="answer-layout">
+              <div class="answer-copy">
+                <p class="kanji" id="kanji-answer"></p>
+                <p class="reading" id="reading-answer"></p>
+              </div>
+              <div class="answer-illustration" id="answer-illustration"></div>
+            </div>
+          </div>
+        </article>
+
+        <button class="flip-button" id="flip-button" type="button" aria-label="Flip card">
+          <svg viewBox="0 0 260 155" role="img" aria-labelledby="cat-title cat-description" xmlns="http://www.w3.org/2000/svg">
+            <title id="cat-title">Flip the flashcard</title>
+            <desc id="cat-description">A round, rosy-cheeked kitten with soft rounded ears and a speech bubble that says フリップ.</desc>
+            <defs>
+              <linearGradient id="cat-fur" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffe4c9"/>
+                <stop offset="1" stop-color="#f6afbf"/>
+              </linearGradient>
+              <linearGradient id="cat-bubble" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#fff"/>
+                <stop offset="1" stop-color="#fff0f8"/>
+              </linearGradient>
+            </defs>
+            <path d="M150 14h91a11 11 0 0 1 11 11v35a11 11 0 0 1-11 11h-39l-13 14-1-14h-38a11 11 0 0 1-11-11V25a11 11 0 0 1 11-11Z" fill="url(#cat-bubble)" stroke="#765c78" stroke-width="2.5"/>
+            <text x="194" y="48" text-anchor="middle" fill="#9d4c82" font-size="17" font-weight="700" font-family="sans-serif">フリップ</text>
+            <path d="M45 73c-5-12-8-25-6-35 1-8 7-10 13-5l20 19c12-5 28-5 40-1l18-18c6-6 13-4 14 4 2 12-1 25-6 36 11 13 15 30 12 47-4 25-25 39-55 39-33 0-55-15-58-42-2-16 1-32 8-44Z" fill="url(#cat-fur)" stroke="#765c78" stroke-width="3.5" stroke-linejoin="round"/>
+            <path d="M48 54c-2-8-3-15-2-20 0-2 2-3 4-1l14 14Zm79 0c2-8 3-15 2-20 0-2-2-3-4-1l-14 14Z" fill="#f4a6b8"/>
+            <path d="M48 125c-14-2-21-9-24-18m106 18c14-2 21-9 24-18" fill="none" stroke="#765c78" stroke-width="3.5" stroke-linecap="round"/>
+            <ellipse cx="68" cy="93" rx="10" ry="14" fill="#55475d"/>
+            <ellipse cx="112" cy="93" rx="10" ry="14" fill="#55475d"/>
+            <ellipse cx="71" cy="88" rx="3.5" ry="5" fill="#fff"/>
+            <ellipse cx="115" cy="88" rx="3.5" ry="5" fill="#fff"/>
+            <circle cx="53" cy="107" r="7" fill="#ef8da7" opacity=".62"/>
+            <circle cx="127" cy="107" r="7" fill="#ef8da7" opacity=".62"/>
+            <path d="m86 105 8 0-4 5Z" fill="#d87598"/>
+            <path d="M90 110c-1 7-10 9-15 3m15-3c1 7 10 9 15 3" fill="none" stroke="#765c78" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M55 150c-8 0-12 6-10 12h33c2-7-7-12-15-12Zm54 0c8 0 12 6 10 12H86c-2-7 7-12 15-12Z" fill="#fff4fa" stroke="#765c78" stroke-width="3"/>
+            <path d="M68 157h-9m68 0h-9" stroke="#e887a6" stroke-width="2" stroke-linecap="round"/>
+            <path d="m31 66 3 6m126-6-3 6m-69-58 2-6m14 7 3-5" stroke="#e8a4c4" stroke-width="3" stroke-linecap="round"/>
+            <path d="m36 120-7 3m125-3 7 3" stroke="#765c78" stroke-width="2" stroke-linecap="round"/>
+            <path d="M82 61c4-5 12-5 16 0" fill="none" stroke="#765c78" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <div class="actions" id="actions" hidden>
+          <button class="action-button keep-button" id="keep-button" type="button">Keep in Scope &amp; Next</button>
+          <button class="action-button deactivate-button" id="deactivate-button" type="button">Deactivate / Memorized &amp; Next</button>
+        </div>
+      </section>
+
+      <section class="completion" id="completion" hidden aria-live="polite">
+        <p class="completion-emoji" aria-hidden="true">🎉</p>
+        <h2>All done — great work!</h2>
+        <p id="completion-message"></p>
+        <button class="completion-button" id="reactivate-button" type="button">Reactivate Scoped Cards</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const INITIAL_CARDS = [
+      { id: 1, kanji: "顔", reading: "かお", estonian: "nägu", active: true },
+      { id: 2, kanji: "顔色", reading: "かおいろ", estonian: "jume", active: true },
+      { id: 3, kanji: "笑顔", reading: "えがお", estonian: "naerunägu", active: true },
+      { id: 4, kanji: "洗(せん)顔", reading: "せんがん(する)", estonian: "näopesu", active: true },
+      { id: 5, kanji: "情", reading: "じょう", estonian: "halastus, kiindumine", active: true },
+      { id: 6, kanji: "情け", reading: "なさけ", estonian: "halastus", active: true },
+      { id: 7, kanji: "表情", reading: "ひょうじょう", estonian: "näoilme", active: true },
+      { id: 8, kanji: "友情", reading: "ゆうじょう", estonian: "sõprus", active: true },
+      { id: 9, kanji: "情報(ほう)", reading: "じょうほう", estonian: "info", active: true },
+      { id: 10, kanji: "怒る", reading: "おこる", estonian: "vihastama", active: true },
+      { id: 11, kanji: "怒り", reading: "いかり", estonian: "viha", active: true },
+      { id: 12, kanji: "激(げき)怒する", reading: "げきど(する)", estonian: "raevutsema, raev", active: true },
+      { id: 13, kanji: "変な", reading: "へんな", estonian: "imelik, veider, kummaline", active: true },
+      { id: 14, kanji: "大変な", reading: "たいへんな", estonian: "keeruline, häda", active: true },
+      { id: 15, kanji: "変人", reading: "へんじん", estonian: "hullumeelne isik", active: true },
+      { id: 16, kanji: "～を変える", reading: "～をかえる", estonian: "midagi muutma", active: true },
+      { id: 17, kanji: "～が変わる", reading: "～がかわる", estonian: "muutuma", active: true },
+      { id: 18, kanji: "変化", reading: "へんか(する)", estonian: "muutus", active: true },
+      { id: 19, kanji: "相手", reading: "あいて", estonian: "vastane, partner", active: true },
+      { id: 20, kanji: "首(しゅ)相", reading: "しゅしょう", estonian: "peaminister", active: true },
+      { id: 21, kanji: "相談(だん)する", reading: "そうだん(する)", estonian: "arutlema, arutus", active: true },
+      { id: 22, kanji: "相互(ご)の", reading: "そうごの", estonian: "vastastikune", active: true },
+      { id: 23, kanji: "横", reading: "よこ", estonian: "kõrval", active: true },
+      { id: 24, kanji: "横書き", reading: "よこがき", estonian: "paremalt vasakule kirjutamine [täpsemalt: horisontaalne kirjutamine]", active: true },
+      { id: 25, kanji: "横綱(づな)", reading: "よこづな", estonian: "kõige kõrgem sumo staatus", active: true },
+      { id: 26, kanji: "横断(だん)歩道", reading: "おうだんほどう", estonian: "ülekäigurada", active: true },
+      { id: 27, kanji: "～を～に比べる", reading: "～を～にくらべる", estonian: "võrdlema", active: true },
+      { id: 28, kanji: "比較(かく)", reading: "ひかく(する)", estonian: "võrdlus, võrdlema", active: true },
+      { id: 29, kanji: "対比", reading: "たいひ(する)", estonian: "kahe vahel võrdlus", active: true },
+      { id: 30, kanji: "比喩(ゆ)", reading: "ひゆ", estonian: "metafoor", active: true },
+      { id: 31, kanji: "文化", reading: "ぶんか", estonian: "kultuur", active: true },
+      { id: 32, kanji: "化学", reading: "かがく", estonian: "keemia", active: true },
+      { id: 33, kanji: "同化", reading: "どうか", estonian: "samastus (ING: assimilation) [assimilatsioon]", active: true },
+      { id: 34, kanji: "お化け", reading: "おばけ", estonian: "koletis, monstrum", active: true },
+      { id: 35, kanji: "化粧(-しょう)", reading: "けしょう(する)", estonian: "meik", active: true },
+      { id: 36, kanji: "～化", reading: "～か", estonian: "-seerimine, (ING: -zation) [liide, mis muudab sõna tegevuse või protsessi nimetuseks]", active: true },
+      { id: 37, kanji: "違う", reading: "ちがう", estonian: "vale, erinema", active: true },
+      { id: 38, kanji: "違い", reading: "ちがい", estonian: "erinevus", active: true },
+      { id: 39, kanji: "間違える", reading: "まちがえる", estonian: "eksima, vigu tegema", active: true },
+      { id: 40, kanji: "違法(ほう)", reading: "いほう", estonian: "illegaalne, mitte seaduslik", active: true },
+      { id: 41, kanji: "違反", reading: "いはん(する)", estonian: "seaduse rikkumine", active: true },
+      { id: 42, kanji: "悲しい", reading: "かなしい", estonian: "kurb", active: true },
+      { id: 43, kanji: "悲しむ", reading: "かなしむ", estonian: "kurb olema, kurvastama", active: true },
+      { id: 44, kanji: "悲劇(げき)", reading: "ひげき", estonian: "tragöödia", active: true },
+      { id: 45, kanji: "悲惨(さん)な", reading: "ひさんな", estonian: "drastiliselt õnnetu [või: traagiline, väga õnnetu]", active: true },
+      { id: 46, kanji: "調べる", reading: "しらべる", estonian: "uurima", active: true },
+      { id: 47, kanji: "調査", reading: "ちょうさ", estonian: "uuring", active: true },
+      { id: 48, kanji: "調子", reading: "ちょうし", estonian: "tervise seis, meeleseisund", active: true },
+      { id: 49, kanji: "強調する", reading: "きょうちょう(する)", estonian: "rõhutama, rõhk", active: true },
+      { id: 50, kanji: "検(けん)査", reading: "けんさ(する)", estonian: "analüüs, uuring (meditsiiniline)", active: true },
+      { id: 51, kanji: "審(しん)査", reading: "しんさ(する)", estonian: "hindama, kohut mõistma [täpsemalt: läbi vaatama, hindama]", active: true },
+      { id: 52, kanji: "捜(そう)査", reading: "そうさ(する)", estonian: "kriminaalne uurimus [tavaliselt: kriminaaluurimine]", active: true },
+      { id: 53, kanji: "結果", reading: "けっか", estonian: "lõpptulemus, järeldus", active: true },
+      { id: 54, kanji: "効(こう)果", reading: "こうか", estonian: "mõju", active: true },
+      { id: 55, kanji: "果物", reading: "くだもの", estonian: "puuvili, marjad", active: true },
+      { id: 56, kanji: "果汁(じゅう)", reading: "かじゅう", estonian: "puuvilja nektar [täpsemalt: puuviljamahl]", active: true },
+      { id: 57, kanji: "使い果たす", reading: "つかいはたす", estonian: "lõpuni kasutamine, millegi tühjaks kasutamine", active: true },
+      { id: 58, kanji: "感情", reading: "かんじょう", estonian: "tunded, emotsioonid", active: true },
+      { id: 59, kanji: "感じる", reading: "かんじる", estonian: "tundma", active: true },
+      { id: 60, kanji: "感覚(かく)", reading: "かんかく", estonian: "meeled, närvid, (感覚がない：tuim) [täpsemalt: meeled, aistingud]", active: true },
+      { id: 61, kanji: "感動する", reading: "かんどうする", estonian: "südant liigutatud olema [liigutatud olema]", active: true },
+      { id: 62, kanji: "感謝(しゃ)する", reading: "かんしゃする", estonian: "tänulik olema, tänama", active: true },
+      { id: 63, kanji: "感想(そう)", reading: "かんそう", estonian: "tunnetega seostuv ülevaade [tavaliselt: mulje, arvamus]", active: true },
+      { id: 64, kanji: "答える", reading: "こたえる", estonian: "vastama", active: true },
+      { id: 65, kanji: "答え", reading: "こたえ", estonian: "vastus", active: true },
+      { id: 66, kanji: "回答", reading: "かいとう(する)", estonian: "eksamivastused", active: true },
+      { id: 67, kanji: "答案用紙", reading: "とうあんようし", estonian: "eksamivastuste paber", active: true }
+    ];
+
+    const STORAGE_KEY = "est_jp_flashcards_ch23_kanji_v1";
+    const ORDER_STORAGE_KEY = "est_jp_flashcards_ch23_kanji_order_v1";
+    let cards = INITIAL_CARDS.map((card) => ({ ...card, inScope: true }));
+    let currentIndex = 0;
+    let isFlipped = false;
+    let allowManualPreview = false;
+    let randomOrderEnabled = false;
+    let studyOrder = [];
+    let previousRandomOrder = [];
+    let randomStartId = INITIAL_CARDS[0].id;
+    let randomEndId = INITIAL_CARDS[INITIAL_CARDS.length - 1].id;
+
+    const cardList = document.getElementById("card-list");
+    const activeCount = document.getElementById("active-count");
+    const randomOrderToggle = document.getElementById("random-order-toggle");
+    const randomStartSelect = document.getElementById("random-start-card");
+    const randomEndSelect = document.getElementById("random-end-card");
+    const storageMessage = document.getElementById("storage-message");
+    const cardPosition = document.getElementById("card-position");
+    const mainStatus = document.getElementById("main-status");
+    const frontContent = document.getElementById("front-content");
+    const backContent = document.getElementById("back-content");
+    const frontPrompt = document.getElementById("front-prompt");
+    const frontIllustration = document.getElementById("front-illustration");
+    const backPrompt = document.getElementById("back-prompt");
+    const kanjiAnswer = document.getElementById("kanji-answer");
+    const readingAnswer = document.getElementById("reading-answer");
+    const answerIllustration = document.getElementById("answer-illustration");
+    const flipButton = document.getElementById("flip-button");
+    const actions = document.getElementById("actions");
+    const studyArea = document.getElementById("study-area");
+    const completion = document.getElementById("completion");
+
+    const CARD_ILLUSTRATIONS = [
+      { symbol: "🙂", detail: "🪞", description: "inimese nägu peeglis" },
+      { symbol: "🪞", detail: "🙂", description: "näo jume ja nahatooni uurimine peeglist" },
+      { symbol: "😊", detail: "✨", description: "rõõmus naerunägu" },
+      { symbol: "🧼", detail: "💧", description: "näo pesemine veega" },
+      { symbol: "❤️", detail: "🤲", description: "kaastunne ja kiindumus" },
+      { symbol: "🤲", detail: "💗", description: "halastav käsi aitab abivajajat" },
+      { symbol: "😮", detail: "😢", description: "muutuv näoilme" },
+      { symbol: "🫂", detail: "💞", description: "sõpradevaheline side" },
+      { symbol: "ℹ️", detail: "💬", description: "jagatud teave" },
+      { symbol: "😠", detail: "💢", description: "vihane inimene" },
+      { symbol: "😡", detail: "🔥", description: "viha väljendav tuline nägu" },
+      { symbol: "🤬", detail: "🌋", description: "raevust purskav vulkaan" },
+      { symbol: "❓", detail: "🌀", description: "kummaline ja segadust tekitav olukord" },
+      { symbol: "😰", detail: "🧩", description: "keeruline olukord, mis teeb muret" },
+      { symbol: "🧑", detail: "🎭", description: "inimene, kes käitub veidralt" },
+      { symbol: "🔄", detail: "🛠️", description: "eseme muutmine teiseks" },
+      { symbol: "🍂", detail: "🌱", description: "millegi muutumine ajas" },
+      { symbol: "🔁", detail: "🦋", description: "muutus ühest vormist teise" },
+      { symbol: "🤝", detail: "⚔️", description: "kaks vastast kohtuvad" },
+      { symbol: "🧑‍💼", detail: "🏛️", description: "peaminister valitsushoone ees" },
+      { symbol: "🗣️", detail: "🤝", description: "inimesed peavad nõu" },
+      { symbol: "🔁", detail: "🤝", description: "vastastikune koostöö" },
+      { symbol: "🧍", detail: "🧍", description: "kaks inimest seisavad kõrvuti" },
+      { symbol: "📄", detail: "↔️", description: "rõhtkirjas tekst üle lehe" },
+      { symbol: "🏆", detail: "🤼", description: "sumo kõrgeima tiitliga meister" },
+      { symbol: "🚶", detail: "🚸", description: "jalakäijate ülekäigurada" },
+      { symbol: "⚖️", detail: "🔍", description: "kahe asja kõrvutamine" },
+      { symbol: "📊", detail: "🔎", description: "andmete võrdlemine" },
+      { symbol: "⚫", detail: "⚪", description: "kahe asja vastandamine" },
+      { symbol: "💬", detail: "🦋", description: "kujundlik võrdlus ehk metafoor" },
+      { symbol: "🎎", detail: "🎨", description: "rahvakultuur ja traditsioonid" },
+      { symbol: "🧪", detail: "⚗️", description: "keemialabori katseklaasid" },
+      { symbol: "🌍", detail: "🤝", description: "inimeste kohanemine ühise kultuuriga" },
+      { symbol: "👻", detail: "🌙", description: "koletis ilmub öösel" },
+      { symbol: "💄", detail: "🪞", description: "meigi tegemine peegli ees" },
+      { symbol: "🏙️", detail: "🔧", description: "millegi muutmine uueks nähtuseks" },
+      { symbol: "❌", detail: "↔️", description: "miski on vale või erinev" },
+      { symbol: "🔀", detail: "🟰", description: "kahe asja erinevus" },
+      { symbol: "✏️", detail: "❌", description: "vea märkamine ja parandamine" },
+      { symbol: "🚫", detail: "⚖️", description: "seadusega keelatud tegevus" },
+      { symbol: "📜", detail: "🚫", description: "reegli või seaduse rikkumine" },
+      { symbol: "😢", detail: "🌧️", description: "kurb inimene vihma käes" },
+      { symbol: "😞", detail: "💧", description: "kurbuse tundmine" },
+      { symbol: "🎭", detail: "💔", description: "traagiline lugu laval" },
+      { symbol: "🌪️", detail: "😢", description: "väga õnnetu ja raske olukord" },
+      { symbol: "🔍", detail: "📖", description: "millegi kohta uurimine" },
+      { symbol: "📋", detail: "🔎", description: "andmete süstemaatiline uurimine" },
+      { symbol: "🩺", detail: "🙂", description: "tervise ja enesetunde kontrollimine" },
+      { symbol: "📣", detail: "➡️", description: "olulise mõtte rõhutamine" },
+      { symbol: "🩺", detail: "🧪", description: "meditsiiniline analüüs" },
+      { symbol: "🔎", detail: "📋", description: "dokumentide või töö läbivaatamine ja hindamine" },
+      { symbol: "🕵️", detail: "🔎", description: "kriminaalasja uurimine" },
+      { symbol: "🏁", detail: "📊", description: "uurimise lõpptulemus" },
+      { symbol: "⚙️", detail: "💥", description: "masina mõju või tulemus" },
+      { symbol: "🍎", detail: "🍇", description: "puuviljakorv" },
+      { symbol: "🍊", detail: "🥤", description: "puuviljamahl klaasis" },
+      { symbol: "🧴", detail: "🫙", description: "varu täielikult ära kasutamine kuni anum tühjaks saab" },
+      { symbol: "❤️", detail: "💭", description: "erinevad tunded südames" },
+      { symbol: "🖐️", detail: "💓", description: "millegi puudutamine ja tundmine" },
+      { symbol: "👂", detail: "👃", description: "meeled tajuvad ümbritsevat" },
+      { symbol: "🥹", detail: "💐", description: "südant liigutav hetk" },
+      { symbol: "🙏", detail: "💝", description: "tänulik inimene tänab abistajat" },
+      { symbol: "💭", detail: "📝", description: "oma muljete ja tunnete kirjapanek" },
+      { symbol: "🙋", detail: "💬", description: "küsimusele vastamine" },
+      { symbol: "💬", detail: "✅", description: "suuline või kirjalik vastus" },
+      { symbol: "📝", detail: "🎓", description: "eksami vastusteleht" },
+      { symbol: "📝", detail: "✅", description: "täidetud vastusteleht eksamil" }
+    ];
+    function createAnimeIllustration(card) {
+      const illustration = CARD_ILLUSTRATIONS[card.id - 1];
+      const hue = ((card.id - 1) * 47 + 335) % 360;
+      const background = `hsl(${hue} 92% 94%)`;
+      const accent = `hsl(${(hue + 40) % 360} 72% 74%)`;
+      const label = `${card.estonian}: ${illustration.description}`;
+      const detail = illustration.detail
+        ? `<text x="146" y="151" text-anchor="middle" font-size="34">${illustration.detail}</text>`
+        : "";
+      const mainImage = illustration.customSvg
+        || `<text x="95" y="119" text-anchor="middle" font-size="76">${illustration.symbol}</text>${detail}`;
+
+      return `<svg viewBox="0 0 190 190" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="182" height="182" rx="30" fill="${background}"/>
+        <path d="m28 39 3-7 3 7 7 3-7 3-3 7-3-7-7-3Zm128 108 2-5 2 5 5 2-5 2-2 5-2-5-5-2Z" fill="#fff" opacity=".95"/>
+        <circle cx="41" cy="117" r="4" fill="${accent}"/>
+        <circle cx="151" cy="52" r="5" fill="${accent}"/>
+        <path d="M29 91c9-8 17-8 25 0m82 0c8-8 16-8 25 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+        <circle cx="95" cy="95" r="63" fill="#fff" opacity=".68"/>
+        ${mainImage}
+        <path d="M63 157h64" stroke="${accent}" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+      </svg>`;
+    }
+
+    function showStorageError(message) {
+      storageMessage.textContent = message;
+      storageMessage.hidden = false;
+    }
+
+    function loadProgress() {
+      let saved;
+      try {
+        const value = window.localStorage.getItem(STORAGE_KEY);
+        if (value === null) return;
+        saved = JSON.parse(value);
+      } catch (error) {
+        showStorageError(`Saved progress could not be loaded: ${error.message}`);
+        return;
+      }
+
+      const valid = Array.isArray(saved)
+        && saved.length === INITIAL_CARDS.length
+        && saved.every((item, index) => item
+          && item.id === INITIAL_CARDS[index].id
+          && typeof item.active === "boolean"
+          && (item.inScope === undefined || typeof item.inScope === "boolean"));
+
+      if (!valid) {
+        showStorageError("Saved progress has an unexpected format. Starting with all cards active.");
+        return;
+      }
+
+      cards = cards.map((card, index) => ({
+        ...card,
+        active: saved[index].active,
+        inScope: saved[index].inScope !== false
+      }));
+      const initialActiveIndex = cards.findIndex((card) => card.inScope && card.active);
+      if (initialActiveIndex !== -1) currentIndex = initialActiveIndex;
+    }
+
+    function saveOrderSettings() {
+      try {
+        window.localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify({
+          enabled: randomOrderEnabled,
+          startId: randomStartId,
+          endId: randomEndId,
+          previousOrder: previousRandomOrder
+        }));
+      } catch (error) {
+        showStorageError(`Random order preference could not be saved: ${error.message}`);
+      }
+    }
+
+    function createRandomOrder(selectFirst = true) {
+      studyOrder = cards
+        .map((card, index) => card.inScope && card.active
+          && card.id >= randomStartId && card.id <= randomEndId ? index : -1)
+        .filter((index) => index !== -1);
+
+      for (let index = studyOrder.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [studyOrder[index], studyOrder[swapIndex]] = [studyOrder[swapIndex], studyOrder[index]];
+      }
+
+      const newOrder = studyOrder.map((index) => cards[index].id);
+      const sameCards = newOrder.length === previousRandomOrder.length
+        && newOrder.every((id) => previousRandomOrder.includes(id));
+      const sameOrder = sameCards && newOrder.every((id, index) => id === previousRandomOrder[index]);
+
+      if (sameOrder && studyOrder.length > 1) {
+        studyOrder.push(studyOrder.shift());
+      }
+
+      if (studyOrder.length > 1 && studyOrder[0] === currentIndex) {
+        [studyOrder[0], studyOrder[1]] = [studyOrder[1], studyOrder[0]];
+      }
+
+      previousRandomOrder = studyOrder.map((index) => cards[index].id);
+      if (selectFirst && studyOrder.length > 0) currentIndex = studyOrder[0];
+      saveOrderSettings();
+    }
+
+    function initializeRandomRangeSelectors() {
+      for (const card of INITIAL_CARDS) {
+        const label = `#${card.id} ${card.estonian}`;
+        randomStartSelect.add(new Option(label, String(card.id)));
+        randomEndSelect.add(new Option(label, String(card.id)));
+      }
+
+      randomStartSelect.value = String(randomStartId);
+      randomEndSelect.value = String(randomEndId);
+    }
+
+    function appendEligibleCardsToRandomOrder() {
+      studyOrder = studyOrder.filter((index) => cards[index].inScope && cards[index].active
+        && cards[index].id >= randomStartId && cards[index].id <= randomEndId);
+      const alreadyOrdered = new Set(studyOrder);
+      const additions = cards
+        .map((card, index) => card.inScope && card.active
+          && card.id >= randomStartId && card.id <= randomEndId
+          && !alreadyOrdered.has(index) ? index : -1)
+        .filter((index) => index !== -1);
+
+      for (let index = additions.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [additions[index], additions[swapIndex]] = [additions[swapIndex], additions[index]];
+      }
+
+      studyOrder.push(...additions);
+    }
+
+    function loadOrderSettings() {
+      let saved;
+      try {
+        const value = window.localStorage.getItem(ORDER_STORAGE_KEY);
+        if (value === null) return;
+        saved = JSON.parse(value);
+      } catch (error) {
+        showStorageError(`Random order preference could not be loaded: ${error.message}`);
+        return;
+      }
+
+      const savedStartId = saved?.startId ?? INITIAL_CARDS[0].id;
+      const savedEndId = saved?.endId ?? INITIAL_CARDS[INITIAL_CARDS.length - 1].id;
+      const valid = saved
+        && typeof saved.enabled === "boolean"
+        && Number.isInteger(savedStartId)
+        && Number.isInteger(savedEndId)
+        && savedStartId >= INITIAL_CARDS[0].id
+        && savedEndId <= INITIAL_CARDS[INITIAL_CARDS.length - 1].id
+        && savedStartId <= savedEndId
+        && Array.isArray(saved.previousOrder)
+        && saved.previousOrder.every((id) => INITIAL_CARDS.some((card) => card.id === id));
+      if (!valid) {
+        showStorageError("Saved random order preference has an unexpected format.");
+        return;
+      }
+
+      randomOrderEnabled = saved.enabled;
+      randomStartId = savedStartId;
+      randomEndId = savedEndId;
+      randomStartSelect.value = String(randomStartId);
+      randomEndSelect.value = String(randomEndId);
+      previousRandomOrder = saved.previousOrder;
+      randomOrderToggle.checked = randomOrderEnabled;
+      if (randomOrderEnabled) createRandomOrder();
+    }
+
+    function saveProgress() {
+      try {
+        window.localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(cards.map(({ id, active, inScope }) => ({ id, active, inScope })))
+        );
+        storageMessage.hidden = true;
+        storageMessage.textContent = "";
+      } catch (error) {
+        showStorageError(`Progress could not be saved: ${error.message}`);
+      }
+    }
+
+    function buildSidebar() {
+      cardList.replaceChildren(...cards.map((card, index) => {
+        const row = document.createElement("li");
+        row.className = "card-row";
+        row.dataset.index = String(index);
+
+        const select = document.createElement("button");
+        select.className = "card-select";
+        select.type = "button";
+        select.setAttribute("aria-label", `Load card ${card.id}: ${card.estonian}`);
+
+        const top = document.createElement("span");
+        top.className = "card-row-top";
+        const number = document.createElement("span");
+        number.className = "card-number";
+        number.textContent = `#${card.id}`;
+        const badge = document.createElement("span");
+        badge.className = "status-badge";
+        const scopeBadge = document.createElement("span");
+        scopeBadge.className = "scope-badge";
+        top.append(number, badge, scopeBadge);
+
+        const estonian = document.createElement("span");
+        estonian.className = "card-estonian";
+        estonian.textContent = card.estonian;
+        select.append(top, estonian);
+
+        const toggleStack = document.createElement("span");
+        toggleStack.className = "toggle-stack";
+
+        const activeControl = document.createElement("label");
+        activeControl.className = "toggle-control active-toggle";
+        activeControl.append(document.createTextNode("Study"));
+        const activeToggle = document.createElement("input");
+        activeToggle.type = "checkbox";
+        activeToggle.dataset.index = String(index);
+        activeToggle.dataset.kind = "active";
+        const activeTrack = document.createElement("span");
+        activeTrack.className = "switch-track";
+        const activeLabel = document.createElement("span");
+        activeLabel.className = "toggle-label";
+        activeLabel.append(activeToggle, activeTrack);
+        activeControl.append(activeLabel);
+
+        const scopeControl = document.createElement("label");
+        scopeControl.className = "toggle-control scope-toggle";
+        scopeControl.append(document.createTextNode("Scope"));
+        const scopeToggle = document.createElement("input");
+        scopeToggle.type = "checkbox";
+        scopeToggle.dataset.index = String(index);
+        scopeToggle.dataset.kind = "scope";
+        const scopeTrack = document.createElement("span");
+        scopeTrack.className = "switch-track";
+        const scopeLabel = document.createElement("span");
+        scopeLabel.className = "toggle-label";
+        scopeLabel.append(scopeToggle, scopeTrack);
+        scopeControl.append(scopeLabel);
+
+        toggleStack.append(activeControl, scopeControl);
+        row.append(select, toggleStack);
+        return row;
+      }));
+    }
+
+    function updateSidebar(scrollIntoView = false) {
+      const inScopeTotal = cards.filter((card) => card.inScope).length;
+      const activeTotal = cards.filter((card) => card.inScope && card.active).length;
+      activeCount.textContent = `Active: ${activeTotal} / ${inScopeTotal} · In scope: ${inScopeTotal} / ${cards.length}`;
+      document.getElementById("reactivate-scoped-button").disabled = inScopeTotal === 0;
+
+      for (let index = 0; index < cards.length; index += 1) {
+        const card = cards[index];
+        const row = cardList.children[index];
+        const isCurrent = index === currentIndex;
+        row.classList.toggle("is-inactive", !card.active);
+        row.classList.toggle("is-out-of-scope", !card.inScope);
+        row.classList.toggle("is-current", isCurrent);
+
+        const select = row.querySelector(".card-select");
+        select.setAttribute("aria-current", isCurrent ? "true" : "false");
+
+        const badge = row.querySelector(".status-badge");
+        badge.textContent = card.active ? "Active" : "Memorized";
+
+        const scopeBadge = row.querySelector(".scope-badge");
+        scopeBadge.textContent = card.inScope ? "In scope" : "Out of scope";
+        scopeBadge.classList.toggle("is-out-of-scope", !card.inScope);
+
+        const activeToggle = row.querySelector('input[data-kind="active"]');
+        activeToggle.checked = card.active;
+        activeToggle.setAttribute("aria-label", `${card.active ? "Deactivate" : "Reactivate"} card ${card.id}`);
+
+        const scopeToggle = row.querySelector('input[data-kind="scope"]');
+        scopeToggle.checked = card.inScope;
+        scopeToggle.setAttribute("aria-label", `${card.inScope ? "Descope" : "Rescope"} card ${card.id}`);
+
+        if (isCurrent && scrollIntoView) {
+          const rowRect = row.getBoundingClientRect();
+          const listRect = cardList.getBoundingClientRect();
+          if (rowRect.top < listRect.top) cardList.scrollTop += rowRect.top - listRect.top;
+          if (rowRect.bottom > listRect.bottom) cardList.scrollTop += rowRect.bottom - listRect.bottom;
+          if (rowRect.left < listRect.left) cardList.scrollLeft += rowRect.left - listRect.left;
+          if (rowRect.right > listRect.right) cardList.scrollLeft += rowRect.right - listRect.right;
+        }
+      }
+    }
+
+    function renderMain() {
+      const activeInScope = cards.some((card) => card.inScope && card.active
+        && (!randomOrderEnabled || (card.id >= randomStartId && card.id <= randomEndId)));
+      const inScopeTotal = cards.filter((card) => card.inScope).length;
+      const scopedInActivePool = cards.filter((card) => card.inScope
+        && (!randomOrderEnabled || (card.id >= randomStartId && card.id <= randomEndId))).length;
+      const showStudyArea = activeInScope || allowManualPreview;
+      studyArea.hidden = !showStudyArea;
+      completion.hidden = showStudyArea;
+      document.getElementById("completion-message").textContent = inScopeTotal === 0
+        ? "No cards are currently in scope. Use the Scope switches in the list to choose which cards you want to study."
+        : randomOrderEnabled && !activeInScope
+          ? `No active in-scope cards between #${randomStartId} and #${randomEndId}. Adjust the random range or reactivate scoped cards.`
+        : "You have memorized every card in your study scope. Reactivate scoped cards whenever you are ready for another round.";
+      document.getElementById("reactivate-button").hidden = scopedInActivePool === 0;
+      if (!showStudyArea) return;
+
+      const card = cards[currentIndex];
+      cardPosition.textContent = `Card #${card.id} of ${cards.length}`;
+      mainStatus.textContent = card.active ? "Active" : "Deactivated";
+      mainStatus.className = `status-badge${card.active ? "" : " is-inactive"}`;
+      if (!card.inScope) {
+        mainStatus.textContent = "Out of scope";
+        mainStatus.className = "scope-badge is-out-of-scope";
+      }
+      frontPrompt.textContent = card.estonian;
+      backPrompt.textContent = card.estonian;
+      kanjiAnswer.textContent = card.kanji;
+      readingAnswer.textContent = card.reading;
+      const illustration = createAnimeIllustration(card);
+      frontIllustration.innerHTML = illustration;
+      answerIllustration.innerHTML = illustration;
+      frontContent.hidden = isFlipped;
+      backContent.hidden = !isFlipped;
+      flipButton.hidden = isFlipped;
+      actions.hidden = !isFlipped;
+    }
+
+    function render(scrollIntoView = false) {
+      updateSidebar(scrollIntoView);
+      renderMain();
+    }
+
+    function loadCard(index) {
+      currentIndex = index;
+      isFlipped = false;
+      allowManualPreview = true;
+      render(true);
+    }
+
+    function advanceToNextActive() {
+      allowManualPreview = false;
+      if (randomOrderEnabled) {
+        appendEligibleCardsToRandomOrder();
+        const orderPosition = studyOrder.indexOf(currentIndex);
+        if (orderPosition === -1) {
+          const nextEligibleIndex = studyOrder.find((index) => cards[index].inScope && cards[index].active);
+          if (nextEligibleIndex !== undefined) {
+            currentIndex = nextEligibleIndex;
+            isFlipped = false;
+            render(true);
+            return;
+          }
+        } else {
+          for (let nextPosition = orderPosition + 1; nextPosition < studyOrder.length; nextPosition += 1) {
+            const nextIndex = studyOrder[nextPosition];
+            if (cards[nextIndex].inScope && cards[nextIndex].active) {
+              currentIndex = nextIndex;
+              isFlipped = false;
+              render(true);
+              return;
+            }
+          }
+        }
+
+        createRandomOrder();
+        isFlipped = false;
+        render(true);
+        return;
+      }
+
+      for (let offset = 1; offset <= cards.length; offset += 1) {
+        const nextIndex = (currentIndex + offset) % cards.length;
+        if (cards[nextIndex].inScope && cards[nextIndex].active) {
+          currentIndex = nextIndex;
+          isFlipped = false;
+          render(true);
+          return;
+        }
+      }
+      render();
+    }
+
+    function resetAllCards() {
+      cards = INITIAL_CARDS.map((card) => ({ ...card, active: true, inScope: true }));
+      currentIndex = 0;
+      isFlipped = false;
+      allowManualPreview = false;
+      saveProgress();
+      if (randomOrderEnabled) createRandomOrder();
+      render(true);
+    }
+
+    function reactivateScopedCards() {
+      cards = cards.map((card) => ({
+        ...card,
+        active: card.inScope ? true : card.active
+      }));
+      currentIndex = cards.findIndex((card) => card.inScope);
+      if (currentIndex === -1) currentIndex = 0;
+      isFlipped = false;
+      allowManualPreview = false;
+      saveProgress();
+      if (randomOrderEnabled) createRandomOrder();
+      render(true);
+    }
+
+    cardList.addEventListener("click", (event) => {
+      const select = event.target.closest(".card-select");
+      if (!select) return;
+      const row = select.closest(".card-row");
+      loadCard(Number(row.dataset.index));
+    });
+
+    cardList.addEventListener("change", (event) => {
+      const toggle = event.target.closest('input[type="checkbox"]');
+      if (!toggle) return;
+      const index = Number(toggle.dataset.index);
+      if (toggle.dataset.kind === "scope") {
+        cards[index].inScope = toggle.checked;
+      } else {
+        cards[index].active = toggle.checked;
+      }
+      saveProgress();
+      if (randomOrderEnabled) appendEligibleCardsToRandomOrder();
+      render();
+    });
+
+    randomOrderToggle.addEventListener("change", () => {
+      randomOrderEnabled = randomOrderToggle.checked;
+      if (randomOrderEnabled) {
+        createRandomOrder();
+      } else {
+        studyOrder = [];
+        saveOrderSettings();
+      }
+      isFlipped = false;
+      render(true);
+    });
+
+    randomStartSelect.addEventListener("change", () => {
+      randomStartId = Number(randomStartSelect.value);
+      if (randomStartId > randomEndId) {
+        randomEndId = randomStartId;
+        randomEndSelect.value = String(randomEndId);
+      }
+      if (randomOrderEnabled) createRandomOrder();
+      else saveOrderSettings();
+      isFlipped = false;
+      render(true);
+    });
+
+    randomEndSelect.addEventListener("change", () => {
+      randomEndId = Number(randomEndSelect.value);
+      if (randomEndId < randomStartId) {
+        randomStartId = randomEndId;
+        randomStartSelect.value = String(randomStartId);
+      }
+      if (randomOrderEnabled) createRandomOrder();
+      else saveOrderSettings();
+      isFlipped = false;
+      render(true);
+    });
+
+    document.getElementById("reset-button").addEventListener("click", resetAllCards);
+    document.getElementById("reactivate-scoped-button").addEventListener("click", reactivateScopedCards);
+    document.getElementById("reactivate-button").addEventListener("click", reactivateScopedCards);
+
+    flipButton.addEventListener("click", () => {
+      isFlipped = true;
+      renderMain();
+    });
+
+    document.getElementById("keep-button").addEventListener("click", () => {
+      cards[currentIndex].active = true;
+      cards[currentIndex].inScope = true;
+      saveProgress();
+      if (randomOrderEnabled) appendEligibleCardsToRandomOrder();
+      advanceToNextActive();
+    });
+
+    document.getElementById("deactivate-button").addEventListener("click", () => {
+      cards[currentIndex].active = false;
+      saveProgress();
+      advanceToNextActive();
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.target.matches("input, button, textarea, select, [contenteditable='true']")) return;
+      if (studyArea.hidden) return;
+
+      if (event.code === "Space" && !isFlipped) {
+        event.preventDefault();
+        isFlipped = true;
+        renderMain();
+      } else if (isFlipped && (event.key === "1" || event.key === "ArrowRight")) {
+        event.preventDefault();
+        document.getElementById("keep-button").click();
+      } else if (isFlipped && (event.key === "2" || event.key === "Enter")) {
+        event.preventDefault();
+        document.getElementById("deactivate-button").click();
+      }
+    });
+
+    buildSidebar();
+    initializeRandomRangeSelectors();
+    loadProgress();
+    loadOrderSettings();
+    render(true);
+  </script>
+</body>
+</html>
