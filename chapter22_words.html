@@ -1205,9 +1205,9 @@
     }
 
     function getJapaneseSpeechText(card) {
-      const reading = typeof card.reading === "string" && card.reading.trim()
-        ? card.reading
-        : card.kanji;
+      const reading = typeof card.kanji === "string" && card.kanji.trim()
+        ? card.kanji
+        : card.reading;
       return reading
         .split(/\bNB!/iu, 1)[0]
         .replace(/[()[\]{}（）［］｛｝]/gu, "")
