@@ -511,6 +511,15 @@
       overflow-wrap: anywhere;
     }
 
+    .particle-answer {
+      margin: 10px 0 0;
+      color: #66596d;
+      font-size: 0.9rem;
+      font-weight: 650;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
     [hidden] { display: none !important; }
 
     .flip-button {
@@ -656,6 +665,7 @@
               <div class="answer-copy">
                 <p class="kanji" id="kanji-answer"></p>
                 <p class="reading" id="reading-answer"></p>
+                <p class="particle-answer" id="particle-answer" hidden></p>
               </div>
               <div class="answer-illustration" id="answer-illustration"></div>
             </div>
@@ -739,32 +749,32 @@
       { id: 23, kanji: "安全", reading: "あんぜん", estonian: "turvaline", active: true },
       { id: 24, kanji: "大切", reading: "たいせつ", estonian: "kallis; hinnaline", active: true },
       { id: 25, kanji: "めちゃくちゃ", reading: "めちゃくちゃ", estonian: "sassis; kaootiline; väga (samuti ka めっちゃ)", active: true },
-      { id: 26, kanji: "置く", reading: "おく", estonian: "panema; asetama ～に koht ～を asi", active: true },
-      { id: 27, kanji: "気が付く", reading: "きがつく", estonian: "märkama ～に", active: true },
-      { id: 28, kanji: "ける", reading: "ける", estonian: "jalaga lööma ～を", active: true },
-      { id: 29, kanji: "刺す", reading: "さす", estonian: "nõelama; (putukas) hammustama; pussitama ～を", active: true },
-      { id: 30, kanji: "触る", reading: "さわる", estonian: "puudutama ～に/を", active: true },
-      { id: 31, kanji: "捕まる", reading: "つかまる", estonian: "arreteeritud olema; kinni püütud olema ～が", active: true },
-      { id: 32, kanji: "包む", reading: "つつむ", estonian: "ümber panema; katma ～を", active: true },
-      { id: 33, kanji: "殴る", reading: "なぐる", estonian: "lööma; virutama ～を", active: true },
-      { id: 34, kanji: "盗む", reading: "ぬすむ", estonian: "varastama; röövima ～を", active: true },
-      { id: 35, kanji: "貼る", reading: "はる", estonian: "kleepima; (seina peale) panema ～に koht ～を asi", active: true },
-      { id: 36, kanji: "踏む", reading: "ふむ", estonian: "peale astuma ～を", active: true },
-      { id: 37, kanji: "ふる", reading: "ふる", estonian: "tagasi lükkama; keelduma; maha jätma ～を", active: true },
-      { id: 38, kanji: "焼く", reading: "やく", estonian: "küpsetama; grillima; kõrvetama ～を", active: true },
-      { id: 39, kanji: "やる", reading: "やる", estonian: "andma loomadele, taimedele või noorematele ～を; NB! tegema", active: true },
-      { id: 40, kanji: "いじめる", reading: "いじめる", estonian: "kiusama ～を", active: true },
+      { id: 26, kanji: "置く", reading: "おく", estonian: "panema; asetama", particles: "～に (koht), ～を (asi)", active: true },
+      { id: 27, kanji: "気が付く", reading: "きがつく", estonian: "märkama", particles: "～に", active: true },
+      { id: 28, kanji: "ける", reading: "ける", estonian: "jalaga lööma", particles: "～を", active: true },
+      { id: 29, kanji: "刺す", reading: "さす", estonian: "nõelama; (putukas) hammustama; pussitama", particles: "～を", active: true },
+      { id: 30, kanji: "触る", reading: "さわる", estonian: "puudutama", particles: "～に/を", active: true },
+      { id: 31, kanji: "捕まる", reading: "つかまる", estonian: "arreteeritud olema; kinni püütud olema", particles: "～が", active: true },
+      { id: 32, kanji: "包む", reading: "つつむ", estonian: "ümber panema; katma", particles: "～を", active: true },
+      { id: 33, kanji: "殴る", reading: "なぐる", estonian: "lööma; virutama", particles: "～を", active: true },
+      { id: 34, kanji: "盗む", reading: "ぬすむ", estonian: "varastama; röövima", particles: "～を", active: true },
+      { id: 35, kanji: "貼る", reading: "はる", estonian: "kleepima; (seina peale) panema", particles: "～に (koht), ～を (asi)", active: true },
+      { id: 36, kanji: "踏む", reading: "ふむ", estonian: "peale astuma", particles: "～を", active: true },
+      { id: 37, kanji: "ふる", reading: "ふる", estonian: "tagasi lükkama; keelduma; maha jätma", particles: "～を", active: true },
+      { id: 38, kanji: "焼く", reading: "やく", estonian: "küpsetama; grillima; kõrvetama", particles: "～を", active: true },
+      { id: 39, kanji: "やる", reading: "やる", estonian: "andma loomadele, taimedele või noorematele; NB! tegema", particles: "～を", active: true },
+      { id: 40, kanji: "いじめる", reading: "いじめる", estonian: "kiusama", particles: "～を", active: true },
       { id: 41, kanji: "着替える", reading: "きがえる", estonian: "riideid vahetama", active: true },
-      { id: 42, kanji: "ためる", reading: "ためる", estonian: "raha säästma ～を", active: true },
-      { id: 43, kanji: "つづける", reading: "つづける", estonian: "jätkama ～を", active: true },
-      { id: 44, kanji: "ほめる", reading: "ほめる", estonian: "kiitma; komplimente tegema ～を", active: true },
-      { id: 45, kanji: "間違える", reading: "まちがえる", estonian: "viga tegema ～を", active: true },
-      { id: 46, kanji: "見つける", reading: "みつける", estonian: "leidma ～を", active: true },
+      { id: 42, kanji: "ためる", reading: "ためる", estonian: "raha säästma", particles: "～を", active: true },
+      { id: 43, kanji: "つづける", reading: "つづける", estonian: "jätkama", particles: "～を", active: true },
+      { id: 44, kanji: "ほめる", reading: "ほめる", estonian: "kiitma; komplimente tegema", particles: "～を", active: true },
+      { id: 45, kanji: "間違える", reading: "まちがえる", estonian: "viga tegema", particles: "～を", active: true },
+      { id: 46, kanji: "見つける", reading: "みつける", estonian: "leidma", particles: "～を", active: true },
       { id: 47, kanji: "準備する", reading: "じゅんびする", estonian: "ette valmistama", active: true },
-      { id: 48, kanji: "ばかにする", reading: "ばかにする", estonian: "solvama; lolliks tegema ～を", active: true },
-      { id: 49, kanji: "びっくりする", reading: "びっくりする", estonian: "üllatunud olema ～に", active: true },
+      { id: 48, kanji: "ばかにする", reading: "ばかにする", estonian: "solvama; lolliks tegema", particles: "～を", active: true },
+      { id: 49, kanji: "びっくりする", reading: "びっくりする", estonian: "üllatunud olema", particles: "～に", active: true },
       { id: 50, kanji: "昼寝をする", reading: "ひるねをする", estonian: "uinakut tegema", active: true },
-      { id: 51, kanji: "連絡する", reading: "れんらくする", estonian: "kontakteeruma ～に inimene", active: true },
+      { id: 51, kanji: "連絡する", reading: "れんらくする", estonian: "kontakteeruma", particles: "～に (inimene)", active: true },
       { id: 52, kanji: "〜間に", reading: "〜あいだに", estonian: "ajal; ...jooksul", active: true },
       { id: 53, kanji: "ころ", reading: "ころ", estonian: "sellel ajal", active: true },
       { id: 54, kanji: "少し", reading: "すこし", estonian: "natukene", active: true },
@@ -799,6 +809,7 @@
     const backPrompt = document.getElementById("back-prompt");
     const kanjiAnswer = document.getElementById("kanji-answer");
     const readingAnswer = document.getElementById("reading-answer");
+    const particleAnswer = document.getElementById("particle-answer");
     const answerIllustration = document.getElementById("answer-illustration");
     const flipButton = document.getElementById("flip-button");
     const actions = document.getElementById("actions");
@@ -1183,6 +1194,8 @@
       backPrompt.textContent = card.estonian;
       kanjiAnswer.textContent = card.kanji;
       readingAnswer.textContent = card.reading;
+      particleAnswer.textContent = card.particles || "";
+      particleAnswer.hidden = !card.particles;
       const illustration = createAnimeIllustration(card);
       frontIllustration.innerHTML = illustration;
       answerIllustration.innerHTML = illustration;
