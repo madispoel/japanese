@@ -511,6 +511,22 @@
       overflow-wrap: anywhere;
     }
 
+    .tts-btn {
+      margin-top: 12px;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff0f6;
+      color: var(--green-dark);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 700;
+      transition: background 130ms ease, transform 130ms ease;
+    }
+
+    .tts-btn:hover { transform: translateY(-1px); background: #fbe2ee; }
+    .tts-btn:focus-visible { outline: 3px solid #eca5c3; outline-offset: 3px; }
+
     [hidden] { display: none !important; }
 
     .flip-button {
@@ -656,6 +672,7 @@
               <div class="answer-copy">
                 <p class="kanji" id="kanji-answer"></p>
                 <p class="reading" id="reading-answer"></p>
+                <button type="button" class="tts-btn" id="replay-button" aria-label="Replay Japanese pronunciation">🔊 Replay</button>
               </div>
               <div class="answer-illustration" id="answer-illustration"></div>
             </div>
@@ -1258,6 +1275,59 @@
       }
     }
 
+    let japaneseVoice = null;
+
+    function updateJapaneseVoice() {
+      const synthesis = window.speechSynthesis;
+      if (!synthesis) return;
+
+      const preferredVoiceName = /kyoko|otoya|nanami|haruka|ichiro|google.*日本語/iu;
+      const voiceScore = (voice) => (voice.localService ? 100 : 0)
+        + (voice.lang.toLowerCase() === "ja-jp" ? 40 : 0)
+        + (preferredVoiceName.test(voice.name) ? 20 : 0);
+      japaneseVoice = synthesis.getVoices()
+        .filter((voice) => /^ja(?:-|$)/iu.test(voice.lang))
+        .sort((left, right) => voiceScore(right) - voiceScore(left))[0] || null;
+    }
+
+    if (typeof window.speechSynthesis !== "undefined") {
+      updateJapaneseVoice();
+      if (typeof window.speechSynthesis.addEventListener === "function") {
+        window.speechSynthesis.addEventListener("voiceschanged", updateJapaneseVoice);
+      } else {
+        window.speechSynthesis.onvoiceschanged = updateJapaneseVoice;
+      }
+    }
+
+    function getJapaneseSpeechText(card) {
+      const reading = typeof card.reading === "string" && card.reading.trim()
+        ? card.reading
+        : card.kanji;
+      return reading
+        .split(/\bNB!/iu, 1)[0]
+        .replace(/[()[\]{}（）［］｛｝]/gu, "")
+        .replace(/[〜～~]/gu, "")
+        .replace(/[\/／|・、，,;；]/gu, " ")
+        .replace(/\s+/gu, " ")
+        .trim();
+    }
+
+    function speakJapanese(text) {
+      if (typeof window.speechSynthesis === "undefined"
+        || typeof SpeechSynthesisUtterance === "undefined") return;
+      const spokenText = String(text || "").trim();
+      if (!spokenText) return;
+
+      const utterance = new SpeechSynthesisUtterance(spokenText);
+      utterance.lang = "ja-JP";
+      utterance.rate = 0.95;
+      updateJapaneseVoice();
+      if (japaneseVoice) utterance.voice = japaneseVoice;
+
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }
+
     function renderMain() {
       const activeInScope = cards.some((card) => card.inScope && card.active
         && (!randomOrderEnabled || (card.id >= randomStartId && card.id <= randomEndId)));
@@ -1436,9 +1506,18 @@
     document.getElementById("reactivate-scoped-button").addEventListener("click", reactivateScopedCards);
     document.getElementById("reactivate-button").addEventListener("click", reactivateScopedCards);
 
-    flipButton.addEventListener("click", () => {
+    function revealCurrentCard() {
+      if (isFlipped || studyArea.hidden) return;
       isFlipped = true;
       renderMain();
+      speakJapanese(getJapaneseSpeechText(cards[currentIndex]));
+    }
+
+    flipButton.addEventListener("click", revealCurrentCard);
+    document.getElementById("replay-button").addEventListener("click", () => {
+      if (isFlipped && !studyArea.hidden) {
+        speakJapanese(getJapaneseSpeechText(cards[currentIndex]));
+      }
     });
 
     document.getElementById("keep-button").addEventListener("click", () => {
@@ -1456,13 +1535,17 @@
     });
 
     window.addEventListener("keydown", (event) => {
-      if (event.target.matches("input, button, textarea, select, [contenteditable='true']")) return;
-      if (studyArea.hidden) return;
+      if (event.target.matches("input, textarea, select, [contenteditable='true']")) return;
+      if (event.key.toLowerCase() === "r" && isFlipped && !studyArea.hidden) {
+        event.preventDefault();
+        speakJapanese(getJapaneseSpeechText(cards[currentIndex]));
+        return;
+      }
+      if (event.target.matches("button") || studyArea.hidden) return;
 
       if (event.code === "Space" && !isFlipped) {
         event.preventDefault();
-        isFlipped = true;
-        renderMain();
+        revealCurrentCard();
       } else if (isFlipped && (event.key === "1" || event.key === "ArrowRight")) {
         event.preventDefault();
         document.getElementById("keep-button").click();
