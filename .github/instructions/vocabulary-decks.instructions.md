@@ -29,16 +29,17 @@ description: "Use when creating or updating Japanese Estonian vocabulary or kanj
 - Keep pronunciation behavior consistent with the current decks:
   - Reveal with the cat **フリップ** button or **Space** and speak the current Japanese answer once. Loading or selecting an unflipped card must not reveal or speak its answer.
   - Include the accessible **🔊 Replay** button on the revealed side and support **R** while the answer is revealed, except when focus is in an input, textarea, select, or editable field.
+  - Keep Japanese audio controlled by the switch and persist its state across decks in the shared `localStorage` key `est_jp_flashcards_audio_v1`; ignore storage errors.
   - Use `window.speechSynthesis` and `SpeechSynthesisUtterance`, cancel queued speech immediately before speaking, set `lang` to `ja-JP` and `rate` to `0.95`, and fail silently when browser speech synthesis is unavailable.
   - Refresh the available voices on `voiceschanged`; prefer a local Japanese voice and favor familiar Japanese voices such as Kyoko, Otoya, Nanami, Haruka, Ichiro, or Google Japanese when available. Allow the browser's default Japanese voice when no matching voice is available.
-  - `getJapaneseSpeechText(card)` currently prefers `card.kanji` over `card.reading` to preserve Japanese word boundaries and pitch-accent cues, falling back to `reading` only if `kanji` is empty. Keep the existing cleanup of annotation punctuation, iteration markers, alternatives, and spacing. Do not use Estonian or romaji as a speech target.
+  - `getJapaneseSpeechText(card)` prefers nonempty `card.kanji` over `card.reading` to preserve Japanese word boundaries and pitch-accent cues. Preserve `(する)`, `(な)`, and `(の)` suffixes, but remove other parenthetical furigana/annotation text together with its parentheses so readings are not spoken twice. Remove brackets and iteration markers, replace separators (including `⇄`) with spaces, and normalize whitespace. Do not use Estonian or romaji as a speech target.
 
 ## Validation and publishing
 
 Before finishing:
 
 1. Compare card count, order, Japanese forms/readings, and Estonian wording against the supplied list. Check sequential IDs, one illustration per card, and particle hints absent from front-side meanings.
-2. Check JavaScript syntax, unique storage keys, title/heading, and the HTML's browser-rendered front/back. Verify representative illustrations and particle visibility.
+2. Check JavaScript syntax, unique storage keys, title/heading, and the HTML's browser-rendered front/back. Verify representative illustrations and particle visibility. Run `python3 generate_index.py`; it validates deck filenames, titles/headings, keys, card IDs, illustration counts, and speech helper requirements before regenerating the index.
 3. Test TTS on reveal, replay button, **R** replay, and **Space** reveal. Confirm card selection/loading and a new unflipped card do not speak; verify a sensible Japanese speech target and no errors when TTS is unsupported.
 4. Run `python generate_index.py` from the repository root to regenerate the menu. Do not edit the generated `index.html` manually. The Pages workflow builds its own index and publishes on pushes to `main`.
 5. Commit and push only when the user asks to upload, publish, or otherwise requests it.

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#fff1f7">
-  <title>Estonian to Japanese Flashcards</title>
+  <title>Chapter 20 Kanji · Estonian to Japanese Flashcards</title>
   <style>
     :root {
       color-scheme: light;
@@ -633,7 +633,7 @@
     <aside class="sidebar" aria-label="Flashcard list">
       <header class="sidebar-header">
         <div class="sidebar-title-row">
-          <h1>Estonian → Japanese</h1>
+          <h1>Estonian → Japanese · Chapter 20 Kanji</h1>
           <button class="reset-button" id="reset-button" type="button">Reset All</button>
         </div>
         <p class="active-count" id="active-count" aria-live="polite"></p>
@@ -813,8 +813,9 @@
       { id: 74, kanji: "連続", reading: "れんぞく(する)", estonian: "järjest, vahetpidamata", active: true }
     ];
 
-    const STORAGE_KEY = "est_jp_flashcards_v1";
-    const ORDER_STORAGE_KEY = "est_jp_flashcards_order_v1";
+    const STORAGE_KEY = "est_jp_flashcards_ch20_kanji_v1";
+    const ORDER_STORAGE_KEY = "est_jp_flashcards_ch20_kanji_order_v1";
+    const AUDIO_STORAGE_KEY = "est_jp_flashcards_audio_v1";
     let cards = INITIAL_CARDS.map((card) => ({ ...card, inScope: true }));
     let currentIndex = 0;
     let isFlipped = false;
@@ -1000,7 +1001,12 @@
       const hue = ((card.id - 1) * 47 + 335) % 360;
       const background = `hsl(${hue} 92% 94%)`;
       const accent = `hsl(${(hue + 40) % 360} 72% 74%)`;
-      const label = `${card.estonian}: ${illustration.description}`;
+      const rawLabel = `${card.estonian}: ${illustration.description}`;
+      const label = rawLabel
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
       const detail = illustration.detail
         ? `<text x="146" y="151" text-anchor="middle" font-size="34">${illustration.detail}</text>`
         : "";
@@ -1309,14 +1315,16 @@
     }
 
     function getJapaneseSpeechText(card) {
-      const reading = typeof card.kanji === "string" && card.kanji.trim()
+      const source = typeof card.kanji === "string" && card.kanji.trim()
         ? card.kanji
         : card.reading;
-      return reading
+      return source
         .split(/\bNB!/iu, 1)[0]
-        .replace(/[()[\]{}（）［］｛｝]/gu, "")
+        .replace(/[(（](?:する|な|の)[)）]/gu, (match) => match.slice(1, -1))
+        .replace(/[(（][^()（）]*[)）]/gu, "")
+        .replace(/[\[\]{}［］｛｝]/gu, "")
         .replace(/[〜～~]/gu, "")
-        .replace(/[\/／|・、，,;；]/gu, " ")
+        .replace(/[\/／|・、，,;；⇄]/gu, " ")
         .replace(/\s+/gu, " ")
         .trim();
     }
@@ -1526,6 +1534,9 @@
     audioToggle.addEventListener("change", () => {
       audioEnabled = audioToggle.checked;
       replayButton.disabled = !audioEnabled;
+      try {
+        window.localStorage.setItem(AUDIO_STORAGE_KEY, String(audioEnabled));
+      } catch {}
       if (!audioEnabled && typeof window.speechSynthesis !== "undefined") {
         window.speechSynthesis.cancel();
       }
@@ -1576,6 +1587,11 @@
     initializeRandomRangeSelectors();
     loadProgress();
     loadOrderSettings();
+    try {
+      audioEnabled = window.localStorage.getItem(AUDIO_STORAGE_KEY) === "true";
+    } catch {}
+    audioToggle.checked = audioEnabled;
+    replayButton.disabled = !audioEnabled;
     render(true);
   </script>
 </body>

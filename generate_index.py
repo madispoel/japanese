@@ -4,11 +4,117 @@ import argparse
 import html
 import re
 import shutil
+import sys
 from pathlib import Path
 from urllib.parse import quote
 
 
 ROOT = Path(__file__).resolve().parent
+DECK_FILENAME_PATTERN = re.compile(r"chapter(\d+)_(kanji|words)\.html")
+
+
+def extract_array(source: str, name: str) -> str | None:
+    match = re.search(
+        rf"^[ \t]*const\s+{re.escape(name)}\s*=\s*\[(.*?)^[ \t]*\];",
+        source,
+        re.MULTILINE | re.DOTALL,
+    )
+    return match.group(1) if match else None
+
+
+def validate_decks(pages: list[Path]) -> None:
+    errors: list[str] = []
+    seen_storage_keys: dict[str, Path] = {}
+
+    for page in pages:
+        filename_match = DECK_FILENAME_PATTERN.fullmatch(page.name)
+        if not filename_match:
+            errors.append(f"{page.name}: filename must match chapter<N>_(kanji|words).html")
+            continue
+
+        chapter, deck_type = filename_match.groups()
+        source = page.read_text(encoding="utf-8")
+        expected_title = f"Chapter {chapter} {deck_type.title()} · Estonian to Japanese Flashcards"
+        expected_heading = (
+            f"Estonian → Japanese · Chapter {chapter} Kanji"
+            if deck_type == "kanji"
+            else f"Chapter {chapter} Words"
+        )
+
+        title_match = re.search(r"<title>(.*?)</title>", source, re.DOTALL)
+        if not title_match or html.unescape(title_match.group(1).strip()) != expected_title:
+            errors.append(f"{page.name}: <title> must be {expected_title!r}")
+
+        heading_match = re.search(r"<h1\b[^>]*>(.*?)</h1>", source, re.DOTALL)
+        if not heading_match or html.unescape(heading_match.group(1).strip()) != expected_heading:
+            errors.append(f"{page.name}: <h1> must be {expected_heading!r}")
+
+        expected_storage_keys = {
+            "STORAGE_KEY": f"est_jp_flashcards_ch{chapter}_{deck_type}_v1",
+            "ORDER_STORAGE_KEY": f"est_jp_flashcards_ch{chapter}_{deck_type}_order_v1",
+        }
+        for key_name, expected_key in expected_storage_keys.items():
+            key_match = re.search(
+                rf'\bconst\s+{key_name}\s*=\s*"([^"]*)"',
+                source,
+            )
+            if not key_match or key_match.group(1) != expected_key:
+                errors.append(f"{page.name}: {key_name} must be {expected_key!r}")
+                continue
+            previous_page = seen_storage_keys.get(expected_key)
+            if previous_page:
+                errors.append(
+                    f"{page.name}: storage key {expected_key!r} is also used by {previous_page.name}"
+                )
+            else:
+                seen_storage_keys[expected_key] = page
+
+        cards = extract_array(source, "INITIAL_CARDS")
+        illustration_name = "CARD_ILLUSTRATIONS" if deck_type == "kanji" else "WORD_ILLUSTRATIONS"
+        illustrations = extract_array(source, illustration_name)
+        if cards is None:
+            errors.append(f"{page.name}: INITIAL_CARDS array was not found")
+        if illustrations is None:
+            errors.append(f"{page.name}: {illustration_name} array was not found")
+        if cards is not None and illustrations is not None:
+            card_ids = [
+                int(card_id)
+                for card_id in re.findall(r"^\s*\{\s*id:\s*(\d+)\b", cards, re.MULTILINE)
+            ]
+            illustration_count = len(
+                re.findall(
+                    r"^[ \t]*\{",
+                    illustrations,
+                    re.MULTILINE,
+                )
+            )
+            expected_ids = list(range(1, len(card_ids) + 1))
+            if card_ids != expected_ids:
+                errors.append(f"{page.name}: card ids must be sequential from 1")
+            if len(card_ids) != illustration_count:
+                errors.append(
+                    f"{page.name}: {len(card_ids)} cards but {illustration_count} illustrations"
+                )
+
+        speech_match = re.search(
+            r"function\s+getJapaneseSpeechText\(card\)\s*\{(.*?)^\s*\}",
+            source,
+            re.MULTILINE | re.DOTALL,
+        )
+        if not speech_match:
+            errors.append(f"{page.name}: getJapaneseSpeechText(card) was not found")
+        else:
+            speech_function = speech_match.group(1)
+            if "card.kanji" not in speech_function:
+                errors.append(f"{page.name}: getJapaneseSpeechText(card) must use card.kanji")
+            if "⇄" not in speech_function:
+                errors.append(f"{page.name}: speech separator regex must include ⇄")
+
+    if errors:
+        print("Deck validation failed:", file=sys.stderr)
+        for error in errors:
+            print(f"- {error}", file=sys.stderr)
+        raise SystemExit(1)
 
 
 def natural_key(value: str) -> list[int | str]:
@@ -132,6 +238,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     pages = chapter_pages()
+    validate_decks(pages)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     if args.output_dir.resolve() != ROOT:
         for page in pages:

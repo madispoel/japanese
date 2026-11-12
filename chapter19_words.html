@@ -804,6 +804,7 @@
 
     const STORAGE_KEY = "est_jp_flashcards_ch19_words_v1";
     const ORDER_STORAGE_KEY = "est_jp_flashcards_ch19_words_order_v1";
+    const AUDIO_STORAGE_KEY = "est_jp_flashcards_audio_v1";
     let cards = INITIAL_CARDS.map((card) => ({ ...card, inScope: true }));
     let currentIndex = 0;
     let isFlipped = false;
@@ -900,7 +901,12 @@
       const hue = ((card.id - 1) * 47 + 28) % 360;
       const background = `hsl(${hue} 92% 94%)`;
       const accent = `hsl(${(hue + 40) % 360} 72% 74%)`;
-      const label = `${card.estonian}: ${illustration.description}`;
+      const rawLabel = `${card.estonian}: ${illustration.description}`;
+      const label = rawLabel
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
       const detail = illustration.detail
         ? `<text x="146" y="151" text-anchor="middle" font-size="34">${illustration.detail}</text>`
         : "";
@@ -1210,11 +1216,16 @@
     }
 
     function getJapaneseSpeechText(card) {
-      return card.reading
+      const source = typeof card.kanji === "string" && card.kanji.trim()
+        ? card.kanji
+        : card.reading;
+      return source
         .split(/\bNB!/iu, 1)[0]
-        .replace(/[()[\]{}（）［］｛｝]/gu, "")
+        .replace(/[(（](?:する|な|の)[)）]/gu, (match) => match.slice(1, -1))
+        .replace(/[(（][^()（）]*[)）]/gu, "")
+        .replace(/[\[\]{}［］｛｝]/gu, "")
         .replace(/[〜～~]/gu, "")
-        .replace(/[\/／|・、，,;；]/gu, " ")
+        .replace(/[\/／|・、，,;；⇄]/gu, " ")
         .replace(/\s+/gu, " ")
         .trim();
     }
@@ -1426,6 +1437,9 @@
     audioToggle.addEventListener("change", () => {
       audioEnabled = audioToggle.checked;
       replayButton.disabled = !audioEnabled;
+      try {
+        window.localStorage.setItem(AUDIO_STORAGE_KEY, String(audioEnabled));
+      } catch {}
       if (!audioEnabled && typeof window.speechSynthesis !== "undefined") {
         window.speechSynthesis.cancel();
       }
@@ -1476,6 +1490,11 @@
     initializeRandomRangeSelectors();
     loadProgress();
     loadOrderSettings();
+    try {
+      audioEnabled = window.localStorage.getItem(AUDIO_STORAGE_KEY) === "true";
+    } catch {}
+    audioToggle.checked = audioEnabled;
+    replayButton.disabled = !audioEnabled;
     render(true);
   </script>
 </body>
