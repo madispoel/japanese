@@ -747,6 +747,7 @@
 
   <script>
     const INITIAL_CARDS = [
+
       { id: 1, kanji: "相手", reading: "あいて", estonian: "kaaslane, vastane, partner", active: true },
       { id: 2, kanji: "受付", reading: "うけつけ", estonian: "vastuvõtulaud", active: true },
       { id: 3, kanji: "英会話", reading: "えいかいわ", estonian: "vestlus inglise keeles", active: true },
@@ -776,15 +777,15 @@
       { id: 27, kanji: "変", reading: "へん", estonian: "veider, imelik", active: true },
       { id: 28, kanji: "楽", reading: "らく", estonian: "mugav, lihtne", active: true },
       { id: 29, kanji: "勝つ", reading: "かつ", estonian: "võitma", particles: "～に", active: true },
-      { id: 30, kanji: "コピーを取る", reading: "コピーをとる", estonian: "koopiat tegema", particles: "～を", active: true },
+      { id: 30, kanji: "コピーを取る", reading: "コピーをとる", estonian: "koopiat tegema", active: true },
       { id: 31, kanji: "運ぶ", reading: "はこぶ", estonian: "kandma ühest kohast teise, transportima", particles: "～を", active: true },
       { id: 32, kanji: "走る", reading: "はしる", estonian: "jooksma", active: true },
       { id: 33, kanji: "拾う", reading: "ひろう", estonian: "(midagi) üles korjama", particles: "～を", active: true },
-      { id: 34, kanji: "風が吹く", reading: "かぜがふく", estonian: "tuul puhub", particles: "～が", active: true },
+      { id: 34, kanji: "風が吹く", reading: "かぜがふく", estonian: "tuul puhub", active: true },
       { id: 35, kanji: "放っておく", reading: "ほ(う)っておく", estonian: "(kedagi/midagi) üksi jätma, hooletusse jätma", particles: "～を", active: true },
       { id: 36, kanji: "間に合う", reading: "まにあう", estonian: "õigel ajal jõudma", particles: "～に", active: true },
-      { id: 37, kanji: "迎えに行く", reading: "むかえにいく", estonian: "(kellelegi) järele minema", particles: "～に", active: true },
-      { id: 38, kanji: "計画を立てる", reading: "けいかくをたてる", estonian: "plaani tegema", particles: "～を", active: true },
+      { id: 37, kanji: "迎えに行く", reading: "むかえにいく", estonian: "(kellelegi) järele minema", active: true },
+      { id: 38, kanji: "計画を立てる", reading: "けいかくをたてる", estonian: "plaani tegema", active: true },
       { id: 39, kanji: "育てる", reading: "そだてる", estonian: "kasvatama", particles: "～を", active: true },
       { id: 40, kanji: "助ける", reading: "たすける", estonian: "aitama, päästma", particles: "～を", active: true },
       { id: 41, kanji: "負ける", reading: "まける", estonian: "kaotama (võistlust)", particles: "～に", active: true },
@@ -1226,8 +1227,8 @@
       return source
         .split(/\bNB!/iu, 1)[0]
         .replace(/[(（](?:する|な|の)[)）]/gu, (match) => match.slice(1, -1))
-        .replace(/[(（][^()（）]*[)）]/gu, "")
-        .replace(/[\[\]{}［］｛｝]/gu, "")
+        .replace(/(?<=[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー])[(（][^()（）]*[)）]/gu, "")
+        .replace(/[()[\]{}（）［］｛｝]/gu, "")
         .replace(/[〜～~]/gu, "")
         .replace(/[\/／|・、，,;；⇄]/gu, " ")
         .replace(/\s+/gu, " ")

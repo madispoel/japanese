@@ -747,6 +747,7 @@
 
   <script>
     const INITIAL_CARDS = [
+
       { id: 1, kanji: "あちら", reading: "あちら", estonian: "sinna poole (viisakas)", active: true },
       { id: 2, kanji: "宇宙人", reading: "うちゅうじん", estonian: "tulnukas", active: true },
       { id: 3, kanji: "音", reading: "おと", estonian: "heli", active: true },
@@ -1226,8 +1227,8 @@
       return source
         .split(/\bNB!/iu, 1)[0]
         .replace(/[(（](?:する|な|の)[)）]/gu, (match) => match.slice(1, -1))
-        .replace(/[(（][^()（）]*[)）]/gu, "")
-        .replace(/[\[\]{}［］｛｝]/gu, "")
+        .replace(/(?<=[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー])[(（][^()（）]*[)）]/gu, "")
+        .replace(/[()[\]{}（）［］｛｝]/gu, "")
         .replace(/[〜～~]/gu, "")
         .replace(/[\/／|・、，,;；⇄]/gu, " ")
         .replace(/\s+/gu, " ")

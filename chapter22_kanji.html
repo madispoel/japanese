@@ -747,6 +747,7 @@
 
   <script>
     const INITIAL_CARDS = [
+
       { id: 1, kanji: "日記", reading: "にっき", estonian: "päevik", active: true },
       { id: 2, kanji: "記入する", reading: "きにゅう(する)", estonian: "täitma (dokument)", active: true },
       { id: 3, kanji: "記事", reading: "きじ", estonian: "artikkel", active: true },
@@ -777,7 +778,7 @@
       { id: 28, kanji: "大人用", reading: "おとなよう", estonian: "täiskasvanutele mõeldud", active: true },
       { id: 29, kanji: "費(ひ)用", reading: "ひよう", estonian: "kulu", active: true },
       { id: 30, kanji: "守る", reading: "まもる", estonian: "midagi/kedagi kaitsma", particles: "～を", active: true },
-      { id: 31, kanji: "留守にする", reading: "るすにする", estonian: "mitte kodus olema", particles: "～を; ～に", active: true },
+      { id: 31, kanji: "留守にする", reading: "るすにする", estonian: "mitte kodus olema", particles: "～を", active: true },
       { id: 32, kanji: "留守番", reading: "るすばん(する)", estonian: "üksi kodus olema, kodu valvama", active: true },
       { id: 33, kanji: "お守り", reading: "おまもり", estonian: "õnnetooja, kaitseese", active: true },
       { id: 34, kanji: "週末", reading: "しゅうまつ", estonian: "nädalavahetus", active: true },
@@ -1250,8 +1251,8 @@
       return source
         .split(/\bNB!/iu, 1)[0]
         .replace(/[(（](?:する|な|の)[)）]/gu, (match) => match.slice(1, -1))
-        .replace(/[(（][^()（）]*[)）]/gu, "")
-        .replace(/[\[\]{}［］｛｝]/gu, "")
+        .replace(/(?<=[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー])[(（][^()（）]*[)）]/gu, "")
+        .replace(/[()[\]{}（）［］｛｝]/gu, "")
         .replace(/[〜～~]/gu, "")
         .replace(/[\/／|・、，,;；⇄]/gu, " ")
         .replace(/\s+/gu, " ")

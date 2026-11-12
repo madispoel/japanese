@@ -22,6 +22,19 @@ def extract_array(source: str, name: str) -> str | None:
     return match.group(1) if match else None
 
 
+def japanese_speech_target(source: str) -> str:
+    target = source.split("NB!", maxsplit=1)[0]
+    target = re.sub(r"[(（](?:する|な|の)[)）]", lambda match: match.group()[1:-1], target)
+    target = re.sub(
+        r"(?<=[一-龯々〆ヶぁ-ゖァ-ヺー])[(（][^()（）]*[)）]",
+        "",
+        target,
+    )
+    target = re.sub(r"[()[\]{}（）［］｛｝〜～~]", "", target)
+    target = re.sub(r"[/／|・、，,;；⇄]", " ", target)
+    return " ".join(target.split())
+
+
 def validate_decks(pages: list[Path]) -> None:
     errors: list[str] = []
     seen_storage_keys: dict[str, Path] = {}
@@ -81,6 +94,19 @@ def validate_decks(pages: list[Path]) -> None:
                 int(card_id)
                 for card_id in re.findall(r"^\s*\{\s*id:\s*(\d+)\b", cards, re.MULTILINE)
             ]
+            card_matches = list(re.finditer(
+                r'^\s*\{\s*id:\s*(\d+)\b[^\r\n]*?\bkanji:\s*"((?:\\.|[^"\\])*)"',
+                cards,
+                re.MULTILINE,
+            ))
+            if len(card_matches) != len(card_ids):
+                errors.append(f"{page.name}: every card must have a kanji speech target")
+            for card_match in card_matches:
+                card_id, kanji = card_match.groups()
+                if not japanese_speech_target(kanji):
+                    errors.append(
+                        f"{page.name}: card {card_id} kanji has no speech text after cleanup"
+                    )
             illustration_count = len(
                 re.findall(
                     r"^[ \t]*\{",
