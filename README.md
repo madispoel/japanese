@@ -9,7 +9,14 @@ illustration assets are required.
 
 | Deck | File |
 | --- | --- |
+| Chapter 17 Kanji | [chapter17_kanji.html](./chapter17_kanji.html) |
+| Chapter 17 Words | [chapter17_words.html](./chapter17_words.html) |
+| Chapter 18 Kanji | [chapter18_kanji.html](./chapter18_kanji.html) |
+| Chapter 18 Words | [chapter18_words.html](./chapter18_words.html) |
+| Chapter 19 Kanji | [chapter19_kanji.html](./chapter19_kanji.html) |
+| Chapter 19 Words | [chapter19_words.html](./chapter19_words.html) |
 | Chapter 20 Kanji | [chapter20_kanji.html](./chapter20_kanji.html) |
+| Chapter 20 Words | [chapter20_words.html](./chapter20_words.html) |
 | Chapter 21 Kanji | [chapter21_kanji.html](./chapter21_kanji.html) |
 | Chapter 21 Words | [chapter21_words.html](./chapter21_words.html) |
 | Chapter 22 Kanji | [chapter22_kanji.html](./chapter22_kanji.html) |
