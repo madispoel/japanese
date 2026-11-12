@@ -511,6 +511,15 @@
       overflow-wrap: anywhere;
     }
 
+    .particle-answer {
+      margin: 10px 0 0;
+      color: #66596d;
+      font-size: 0.9rem;
+      font-weight: 650;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
     .tts-btn {
       margin-top: 12px;
       padding: 8px 14px;
@@ -678,6 +687,7 @@
               <div class="answer-copy">
                 <p class="kanji" id="kanji-answer"></p>
                 <p class="reading" id="reading-answer"></p>
+                <p class="particle-answer" id="particle-answer" hidden></p>
                 <button type="button" class="tts-btn" id="replay-button" aria-label="Replay Japanese pronunciation" disabled>🔊 Replay</button>
               </div>
               <div class="answer-illustration" id="answer-illustration"></div>
@@ -820,6 +830,7 @@
     const backPrompt = document.getElementById("back-prompt");
     const kanjiAnswer = document.getElementById("kanji-answer");
     const readingAnswer = document.getElementById("reading-answer");
+    const particleAnswer = document.getElementById("particle-answer");
     const answerIllustration = document.getElementById("answer-illustration");
     const flipButton = document.getElementById("flip-button");
     const actions = document.getElementById("actions");
@@ -1256,6 +1267,8 @@
       backPrompt.textContent = card.estonian;
       kanjiAnswer.textContent = card.kanji;
       readingAnswer.textContent = card.reading;
+      particleAnswer.textContent = card.particles || "";
+      particleAnswer.hidden = !card.particles;
       const illustration = createAnimeIllustration(card);
       frontIllustration.innerHTML = illustration;
       answerIllustration.innerHTML = illustration;

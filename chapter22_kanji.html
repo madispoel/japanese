@@ -511,6 +511,15 @@
       overflow-wrap: anywhere;
     }
 
+    .particle-answer {
+      margin: 10px 0 0;
+      color: #66596d;
+      font-size: 0.9rem;
+      font-weight: 650;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
     .tts-btn {
       margin-top: 12px;
       padding: 8px 14px;
@@ -678,6 +687,7 @@
               <div class="answer-copy">
                 <p class="kanji" id="kanji-answer"></p>
                 <p class="reading" id="reading-answer"></p>
+                <p class="particle-answer" id="particle-answer" hidden></p>
                 <button type="button" class="tts-btn" id="replay-button" aria-label="Replay Japanese pronunciation" disabled>🔊 Replay</button>
               </div>
               <div class="answer-illustration" id="answer-illustration"></div>
@@ -749,7 +759,7 @@
       { id: 10, kanji: "回送バス", reading: "かいそうバス", estonian: "depoobuss", active: true },
       { id: 11, kanji: "最終回", reading: "さいしゅうかい", estonian: "kõige viimane episood", active: true },
       { id: 12, kanji: "初回", reading: "しょかい", estonian: "esimene kord", active: true },
-      { id: 13, kanji: "～を回す", reading: "～をまわす", estonian: "midagi keerutama", active: true },
+      { id: 13, kanji: "～を回す", reading: "～をまわす", estonian: "midagi keerutama", particles: "～を", active: true },
       { id: 14, kanji: "夕方", reading: "ゆうがた", estonian: "õhtu, umbes kella 4-6-ni", active: true },
       { id: 15, kanji: "夕食", reading: "ゆうしょく", estonian: "õhtusöök", active: true },
       { id: 16, kanji: "七夕", reading: "たなばた", estonian: "Jaapani suve pidustus 7. juulil", active: true },
@@ -766,20 +776,20 @@
       { id: 27, kanji: "子供用", reading: "こどもよう", estonian: "lastele mõeldud", active: true },
       { id: 28, kanji: "大人用", reading: "おとなよう", estonian: "täiskasvanutele mõeldud", active: true },
       { id: 29, kanji: "費(ひ)用", reading: "ひよう", estonian: "kulu", active: true },
-      { id: 30, kanji: "～を守る", reading: "～をまもる", estonian: "midagi/kedagi kaitsma", active: true },
-      { id: 31, kanji: "～を留守にする", reading: "～をるすにする", estonian: "mitte kodus olema", active: true },
+      { id: 30, kanji: "～を守る", reading: "～をまもる", estonian: "midagi/kedagi kaitsma", particles: "～を", active: true },
+      { id: 31, kanji: "～を留守にする", reading: "～をるすにする", estonian: "mitte kodus olema", particles: "～を; ～に", active: true },
       { id: 32, kanji: "留守番", reading: "るすばん(する)", estonian: "üksi kodus olema, kodu valvama", active: true },
       { id: 33, kanji: "お守り", reading: "おまもり", estonian: "õnnetooja, kaitseese", active: true },
       { id: 34, kanji: "週末", reading: "しゅうまつ", estonian: "nädalavahetus", active: true },
       { id: 35, kanji: "月末", reading: "げつまつ", estonian: "kuu lõpp", active: true },
       { id: 36, kanji: "期(き)末試験", reading: "きまつしけん", estonian: "semestri lõpueksam", active: true },
       { id: 37, kanji: "12月の末", reading: "12がつのすえ", estonian: "detsembri lõpp", active: true },
-      { id: 38, kanji: "～を待つ", reading: "～をまつ", estonian: "midagi/kedagi ootama", active: true },
+      { id: 38, kanji: "～を待つ", reading: "～をまつ", estonian: "midagi/kedagi ootama", particles: "～を", active: true },
       { id: 39, kanji: "待合室", reading: "まちあいしつ", estonian: "ooteruum", active: true },
       { id: 40, kanji: "期(き)待する", reading: "きたい(する)", estonian: "lootuslikult ootama", active: true },
       { id: 41, kanji: "招(しょう)待する", reading: "しょうたい(する)", estonian: "kutsuma", active: true },
-      { id: 42, kanji: "～を残す", reading: "～をのこす", estonian: "midagi/kedagi järele jätma", active: true },
-      { id: 43, kanji: "～が残る", reading: "～がのこる", estonian: "jääma", active: true },
+      { id: 42, kanji: "～を残す", reading: "～をのこす", estonian: "midagi/kedagi järele jätma", particles: "～を", active: true },
+      { id: 43, kanji: "～が残る", reading: "～がのこる", estonian: "jääma", particles: "～が", active: true },
       { id: 44, kanji: "残業", reading: "ざんぎょう", estonian: "ületunni töö", active: true },
       { id: 45, kanji: "残念(ねん)", reading: "ざんねん", estonian: "kahju, kahetsusväärne", active: true },
       { id: 46, kanji: "心残り", reading: "こころのこり", estonian: "kahetsusväärne, murettekitav, süütunne", active: true },
@@ -838,6 +848,7 @@
     const backPrompt = document.getElementById("back-prompt");
     const kanjiAnswer = document.getElementById("kanji-answer");
     const readingAnswer = document.getElementById("reading-answer");
+    const particleAnswer = document.getElementById("particle-answer");
     const answerIllustration = document.getElementById("answer-illustration");
     const flipButton = document.getElementById("flip-button");
     const actions = document.getElementById("actions");
@@ -1292,6 +1303,8 @@
       backPrompt.textContent = card.estonian;
       kanjiAnswer.textContent = card.kanji;
       readingAnswer.textContent = card.reading;
+      particleAnswer.textContent = card.particles || "";
+      particleAnswer.hidden = !card.particles;
       const illustration = createAnimeIllustration(card);
       frontIllustration.innerHTML = illustration;
       answerIllustration.innerHTML = illustration;

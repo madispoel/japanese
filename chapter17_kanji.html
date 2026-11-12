@@ -511,6 +511,15 @@
       overflow-wrap: anywhere;
     }
 
+    .particle-answer {
+      margin: 10px 0 0;
+      color: #66596d;
+      font-size: 0.9rem;
+      font-weight: 650;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
     .tts-btn {
       margin-top: 12px;
       padding: 8px 14px;
@@ -678,6 +687,7 @@
               <div class="answer-copy">
                 <p class="kanji" id="kanji-answer"></p>
                 <p class="reading" id="reading-answer"></p>
+                <p class="particle-answer" id="particle-answer" hidden></p>
                 <button type="button" class="tts-btn" id="replay-button" aria-label="Replay Japanese pronunciation" disabled>🔊 Replay</button>
               </div>
               <div class="answer-illustration" id="answer-illustration"></div>
@@ -739,7 +749,7 @@
     const INITIAL_CARDS = [
       { id: 1, kanji: "十九歳", reading: "じゅうきゅうさい", estonian: "19-aastane", active: true },
       { id: 2, kanji: "二十歳", reading: "はたち", estonian: "20-aastane", active: true },
-      { id: 3, kanji: "〜を習う", reading: "〜をならう", estonian: "õppima", active: true },
+      { id: 3, kanji: "〜を習う", reading: "〜をならう", estonian: "õppima", particles: "～を", active: true },
       { id: 4, kanji: "習字", reading: "しゅうじ", estonian: "kirjatähetede, kaligraafia õppimine", active: true },
       { id: 5, kanji: "練習", reading: "れんしゅう(する)", estonian: "harjutamine", active: true },
       { id: 6, kanji: "習慣(かん)", reading: "しゅうかん", estonian: "komme", active: true },
@@ -750,25 +760,25 @@
       { id: 11, kanji: "主語", reading: "しゅご", estonian: "lause alus", active: true },
       { id: 12, kanji: "主人公(こう)", reading: "しゅじんこう", estonian: "peategelane", active: true },
       { id: 13, kanji: "結果", reading: "けっか", estonian: "järeldus, lõpptulemus", active: true },
-      { id: 14, kanji: "〜を〜と結ぶ", reading: "〜を〜とむすぶ", estonian: "kinni siduma", active: true },
+      { id: 14, kanji: "〜を〜と結ぶ", reading: "〜を〜とむすぶ", estonian: "kinni siduma", particles: "～を; ～と", active: true },
       { id: 15, kanji: "結論(ろん)", reading: "けつろん", estonian: "järeldus", active: true },
       { id: 16, kanji: "結論としては", reading: "けつろんとしては", estonian: "järeldusena", active: true },
-      { id: 17, kanji: "〜と結婚(する)", reading: "〜とけっこん(する)", estonian: "kellega abielluma", active: true },
-      { id: 18, kanji: "〜と離婚(する)", reading: "〜とりこん(する)", estonian: "kellega lahutama", active: true },
+      { id: 17, kanji: "〜と結婚(する)", reading: "〜とけっこん(する)", estonian: "kellega abielluma", particles: "～と", active: true },
+      { id: 18, kanji: "〜と離婚(する)", reading: "〜とりこん(する)", estonian: "kellega lahutama", particles: "～と", active: true },
       { id: 19, kanji: "婚約者", reading: "こんやくしゃ", estonian: "kihlatu", active: true },
       { id: 20, kanji: "新婚", reading: "しんこん", estonian: "värskelt abiellunud", active: true },
       { id: 21, kanji: "未婚", reading: "みこん", estonian: "vallaline, mitte abielus", active: true },
-      { id: 22, kanji: "〜を集める", reading: "〜をあつめる", estonian: "midagi koguma", active: true },
-      { id: 23, kanji: "〜が集まる", reading: "〜があつまる", estonian: "miski koguneb", active: true },
+      { id: 22, kanji: "〜を集める", reading: "〜をあつめる", estonian: "midagi koguma", particles: "～を", active: true },
+      { id: 23, kanji: "〜が集まる", reading: "〜があつまる", estonian: "miski koguneb", particles: "～が", active: true },
       { id: 24, kanji: "特集", reading: "とくしゅう(する)", estonian: "eriteema, erisaade", active: true },
-      { id: 25, kanji: "〜に集中(する)", reading: "〜にしゅうちゅう", estonian: "millelegi keskenduma", active: true },
+      { id: 25, kanji: "〜に集中(する)", reading: "〜にしゅうちゅう", estonian: "millelegi keskenduma", particles: "～に", active: true },
       { id: 26, kanji: "発音(する)", reading: "はつおん", estonian: "hääldus", active: true },
-      { id: 27, kanji: "〜を/から出発する", reading: "〜を/からしゅっぱつ", estonian: "lahkumine, väljumine", active: true },
-      { id: 28, kanji: "〜を発明する", reading: "〜をはつめいする", estonian: "leiutis, leiutama", active: true },
-      { id: 29, kanji: "〜を発見する", reading: "〜をはっけんする", estonian: "avastus, avastama", active: true },
-      { id: 30, kanji: "〜について発表する", reading: "〜についてはっぴょうする", estonian: "esitlus, esitama", active: true },
+      { id: 27, kanji: "〜を/から出発する", reading: "〜を/からしゅっぱつ", estonian: "lahkumine, väljumine", particles: "～を; ～から", active: true },
+      { id: 28, kanji: "〜を発明する", reading: "〜をはつめいする", estonian: "leiutis, leiutama", particles: "～を", active: true },
+      { id: 29, kanji: "〜を発見する", reading: "〜をはっけんする", estonian: "avastus, avastama", particles: "～を", active: true },
+      { id: 30, kanji: "〜について発表する", reading: "〜についてはっぴょうする", estonian: "esitlus, esitama", particles: "～について", active: true },
       { id: 31, kanji: "表⇄裏(うら)", reading: "おもて⇄うら", estonian: "pealealispind ⇄ all, ees j⇄ taga", active: true },
-      { id: 32, kanji: "〜を表す", reading: "〜をあらわす", estonian: "väljendama", active: true },
+      { id: 32, kanji: "〜を表す", reading: "〜をあらわす", estonian: "väljendama", particles: "～を", active: true },
       { id: 33, kanji: "表紙(し)", reading: "ひょうし", estonian: "raamatukaas", active: true },
       { id: 34, kanji: "表現(げん)", reading: "ひょうげん(する)", estonian: "väljend, fraas", active: true },
       { id: 35, kanji: "作品", reading: "さくひん", estonian: "teos", active: true },
@@ -788,20 +798,20 @@
       { id: 49, kanji: "活用する", reading: "かつようする", estonian: "ümber tegema, uuesti kasutama, käänama, käänded", active: true },
       { id: 50, kanji: "活発な", reading: "かっぱつな", estonian: "energiline", active: true },
       { id: 51, kanji: "活気がある/ない", reading: "かっきがある/ない", estonian: "elujõukas olema/mitte", active: true },
-      { id: 52, kanji: "〜を写す", reading: "〜をうつす", estonian: "kopeerima", active: true },
-      { id: 53, kanji: "〜が写る", reading: "〜がうつる", estonian: "kopeeruma", active: true },
+      { id: 52, kanji: "〜を写す", reading: "〜をうつす", estonian: "kopeerima", particles: "～を", active: true },
+      { id: 53, kanji: "〜が写る", reading: "〜がうつる", estonian: "kopeeruma", particles: "～が", active: true },
       { id: 54, kanji: "描(びょう)写する", reading: "びょうしゃする", estonian: "kirjeldama, kirjeldus", active: true },
       { id: 55, kanji: "写真", reading: "しゃしん", estonian: "pilt, foto", active: true },
       { id: 56, kanji: "真ん中", reading: "まんなか", estonian: "keskel", active: true },
-      { id: 57, kanji: "〜の真上", reading: "〜のまうえ", estonian: "otse üleval", active: true },
+      { id: 57, kanji: "〜の真上", reading: "〜のまうえ", estonian: "otse üleval", particles: "～の", active: true },
       { id: 58, kanji: "真実", reading: "しんじつ", estonian: "fakt, tõde", active: true },
       { id: 59, kanji: "真夜中", reading: "まよなか", estonian: "kesköö", active: true },
       { id: 60, kanji: "真っ白", reading: "まっしろ", estonian: "lumivalge", active: true },
       { id: 61, kanji: "真っ赤", reading: "まっか", estonian: "tulipunane", active: true },
       { id: 62, kanji: "真っ青", reading: "まっさお", estonian: "meresinine, kahvatu", active: true },
       { id: 63, kanji: "真っ黒", reading: "まっくろ", estonian: "süsimust", active: true },
-      { id: 64, kanji: "〜を歩く", reading: "〜をあるく", estonian: "mida mööda käima", active: true },
-      { id: 65, kanji: "〜を散歩(する)", reading: "〜をさんぽ", estonian: "kus jalutama", active: true },
+      { id: 64, kanji: "〜を歩く", reading: "〜をあるく", estonian: "mida mööda käima", particles: "～を", active: true },
+      { id: 65, kanji: "〜を散歩(する)", reading: "〜をさんぽ", estonian: "kus jalutama", particles: "～を", active: true },
       { id: 66, kanji: "歩道", reading: "ほどう", estonian: "kõnnitee", active: true },
       { id: 67, kanji: "一歩・二歩", reading: "いっぽ・にほ", estonian: "üks samm・kaks sammu", active: true },
       { id: 68, kanji: "進歩", reading: "しんぽ(する)", estonian: "tehnoloogiline arendus, edusammud", active: true },
@@ -846,6 +856,7 @@
     const backPrompt = document.getElementById("back-prompt");
     const kanjiAnswer = document.getElementById("kanji-answer");
     const readingAnswer = document.getElementById("reading-answer");
+    const particleAnswer = document.getElementById("particle-answer");
     const answerIllustration = document.getElementById("answer-illustration");
     const flipButton = document.getElementById("flip-button");
     const actions = document.getElementById("actions");
@@ -1308,6 +1319,8 @@
       backPrompt.textContent = card.estonian;
       kanjiAnswer.textContent = card.kanji;
       readingAnswer.textContent = card.reading;
+      particleAnswer.textContent = card.particles || "";
+      particleAnswer.hidden = !card.particles;
       const illustration = createAnimeIllustration(card);
       frontIllustration.innerHTML = illustration;
       answerIllustration.innerHTML = illustration;
