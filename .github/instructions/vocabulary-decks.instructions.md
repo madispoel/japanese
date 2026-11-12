@@ -14,7 +14,7 @@ description: "Use when creating or updating Japanese Estonian vocabulary or kanj
 - Preserve the teacher-supplied Japanese form, kana reading, and Estonian wording exactly. Do not normalize spellings or readings.
 - Ignore a separate English-translation column; do not put it in a card. If an English note is embedded in the supplied Estonian text, retain that source text rather than silently rewriting it.
 - If the kanji field is blank, use its supplied kana form for both `kanji` and `reading`.
-- For words and kanji decks, keep particle hints out of `estonian` and put them in the optional `particles` property so they appear only on the answer side below the reading. Preserve the Estonian meaning itself. The particle element must be hidden when there is no hint.
+- For words and kanji decks, keep particle hints out of `estonian` and put them in the optional `particles` property so they appear only on the answer side below the reading. When a supplied Japanese form uses an argument placeholder directly with a particle (such as `〜を〜と結ぶ`), remove the complete placeholder-particle part from both `kanji` and `reading`, leaving the core Japanese form and its particle hint separate. Preserve ordinary Japanese particles that are part of a fixed expression, and keep the particle element hidden when there is no hint.
 - Do not silently correct a supplied Estonian gloss. If a clarification is useful, append it in square brackets after the complete original gloss, for example `original wording [clarification]`.
 
 ## Illustrations and card behavior
