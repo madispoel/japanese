@@ -535,6 +535,7 @@
 
     .tts-btn:hover { transform: translateY(-1px); background: #fbe2ee; }
     .tts-btn:focus-visible { outline: 3px solid #eca5c3; outline-offset: 3px; }
+    .tts-btn:disabled, .tts-btn:disabled:hover { cursor: not-allowed; opacity: 0.55; transform: none; background: #fff0f6; }
 
     [hidden] { display: none !important; }
 
@@ -650,6 +651,11 @@
           <span class="random-order-track"></span>
           <span>Random order</span>
         </label>
+        <label class="random-order-control">
+          <input id="audio-toggle" type="checkbox" role="switch" aria-label="Japanese audio playback" title="Enable or disable Japanese pronunciation playback">
+          <span class="random-order-track"></span>
+          <span>Audio</span>
+        </label>
         <div class="random-range-control" aria-label="Random order card range">
           <label for="random-start-card">Start card
             <select id="random-start-card"></select>
@@ -682,7 +688,7 @@
                 <p class="kanji" id="kanji-answer"></p>
                 <p class="reading" id="reading-answer"></p>
                 <p class="particle-answer" id="particle-answer" hidden></p>
-                <button type="button" class="tts-btn" id="replay-button" aria-label="Replay Japanese pronunciation">🔊 Replay</button>
+                <button type="button" class="tts-btn" id="replay-button" aria-label="Replay Japanese pronunciation" disabled>🔊 Replay</button>
               </div>
               <div class="answer-illustration" id="answer-illustration"></div>
             </div>
@@ -797,6 +803,7 @@
     let isFlipped = false;
     let allowManualPreview = false;
     let randomOrderEnabled = false;
+    let audioEnabled = false;
     let studyOrder = [];
     let previousRandomOrder = [];
     let randomStartId = INITIAL_CARDS[0].id;
@@ -805,6 +812,8 @@
     const cardList = document.getElementById("card-list");
     const activeCount = document.getElementById("active-count");
     const randomOrderToggle = document.getElementById("random-order-toggle");
+    const audioToggle = document.getElementById("audio-toggle");
+    const replayButton = document.getElementById("replay-button");
     const randomStartSelect = document.getElementById("random-start-card");
     const randomEndSelect = document.getElementById("random-end-card");
     const storageMessage = document.getElementById("storage-message");
@@ -1199,7 +1208,7 @@
     }
 
     function speakJapanese(text) {
-      if (typeof window.speechSynthesis === "undefined"
+      if (!audioEnabled || typeof window.speechSynthesis === "undefined"
         || typeof SpeechSynthesisUtterance === "undefined") return;
       const spokenText = String(text || "").trim();
       if (!spokenText) return;
@@ -1402,7 +1411,15 @@
     }
 
     flipButton.addEventListener("click", revealCurrentCard);
-    document.getElementById("replay-button").addEventListener("click", () => {
+    audioToggle.addEventListener("change", () => {
+      audioEnabled = audioToggle.checked;
+      replayButton.disabled = !audioEnabled;
+      if (!audioEnabled && typeof window.speechSynthesis !== "undefined") {
+        window.speechSynthesis.cancel();
+      }
+    });
+
+    replayButton.addEventListener("click", () => {
       if (isFlipped && !studyArea.hidden) {
         speakJapanese(getJapaneseSpeechText(cards[currentIndex]));
       }
